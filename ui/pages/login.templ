@@ -1,0 +1,61 @@
+package pages
+
+import (
+	"github.com/axzilla/templui/component/button"
+	"github.com/axzilla/templui/component/card"
+	"github.com/axzilla/templui/component/form"
+	"github.com/axzilla/templui/component/input"
+	"go-web-boilerplate/ui/layouts"
+)
+
+templ Login() {
+	@layouts.BaseLayout() {
+		<div class="w-full max-w-sm">
+			@card.Card() {
+				@card.Header() {
+					@card.Title() {
+						Login
+					}
+					@card.Description() {
+						Enter your email and password to login.
+					}
+				}
+				@card.Content() {
+					@form.Item() {
+						@form.Label(form.LabelProps{For: "username"}) {
+							Username
+						}
+						@input.Input(input.Props{
+							ID:          "username",
+							Type:        "text",
+							Name:        "username",
+							Placeholder: "Enter your username",
+						})
+						@form.Description() {
+							Enter your email
+						}
+						@form.Message(form.MessageProps{
+							Variant: form.MessageVariantError,
+						}) {
+							Please enter a valid email address.
+						}
+					}
+					@form.Item() {
+						@form.Label(form.LabelProps{For: "password"}) {
+							Password
+						}
+						@input.Input(input.Props{
+							ID:          "password",
+							Type:        "password",
+							Name:        "password",
+							Placeholder: "Enter your password",
+						})
+					}
+					@button.Button() {
+						Login
+					}
+				}
+			}
+		</div>
+	}
+}

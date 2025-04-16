@@ -1,0 +1,48 @@
+package pages
+
+type AccordionRowProps struct {
+	Label string
+	Type  string
+	Name  string
+}
+
+templ AccordionRow(props AccordionRowProps) {
+	<div class="collapse collapse-arrow bg-base-300 join-item">
+		<input
+			if props.Type == "" {
+				type="checkbox"
+			} else {
+				type={ props.Type }
+			}
+			name={ props.Name }
+		/>
+		<div class="collapse-title text-xl font-medium">{ props.Label }</div>
+		<div class="collapse-content bg-base-200">
+			{ children... }
+		</div>
+	</div>
+}
+
+templ AccordionExample() {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<link rel="stylesheet" type="text/css" href="/static/css/tw.css"/>
+			<title>Document</title>
+		</head>
+		<body class="w-full h-full min-h-svh">
+			<main>
+				<div>
+					@AccordionRow(AccordionRowProps{Label: "Accordion row 1", Type: "checkbox"}) {
+						<p>This is the first content</p>
+					}
+					@AccordionRow(AccordionRowProps{Label: "Accordion row 2", Type: "checkbox"}) {
+						<p>This is the second content</p>
+					}
+				</div>
+			</main>
+		</body>
+	</html>
+}
