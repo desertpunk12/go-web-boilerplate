@@ -1,0 +1,65 @@
+package components
+
+import "github.com/golang/web-boilerplate/ui/components"
+
+templ Table(headers []templ.Component, rows []templ.Component, attrs templ.Attributes) {
+	<div class="overflow-x-auto">
+		<table { attrs... } class="table">
+			<thead>
+				<tr>
+					for _, header := range headers {
+						<th>
+							@header
+						</th>
+					}
+				</tr>
+			</thead>
+			<tbody>
+				for _, trow := range rows {
+					@trow
+				}
+			</tbody>
+		</table>
+	</div>
+}
+
+// Component to use as plain text when
+// templ.Component is used as argument
+templ PlainText(content string) {
+	{ content }
+}
+
+templ TableExampleRow(name, email string) {
+	<tr>
+		<td>
+			@components.Checkbox(components.CheckboxProps{Name: email})
+		</td>
+		<td>
+			@components.PlainText(name)
+		</td>
+		<td>
+			@components.PlainText(email)
+		</td>
+	</tr>
+}
+
+templ BasicTable() {
+	Table(
+	[]templ.Component{ 
+			components.Checkbox(
+				components.CheckboxProps{
+					Name: "all",
+				},
+			),
+			components.PlainText("Name"),
+			components.PlainText("Email"),
+		 },
+	[]templ.Component{ 
+			TableExampleRow("John Doe", "john.doe@example.com"),
+			TableExampleRow("Jane Doe", "Jane.doe@example.com"),
+			TableExampleRow("Jim Smith", "jim.smith@example.com"),
+			TableExampleRow("Julie Smith", "julie.smith@example.com"),
+		 },
+	nil,
+	)
+}
