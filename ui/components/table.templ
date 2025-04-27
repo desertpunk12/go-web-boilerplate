@@ -1,7 +1,5 @@
 package components
 
-import "github.com/golang/web-boilerplate/ui/components"
-
 templ Table(headers []templ.Component, rows []templ.Component, attrs templ.Attributes) {
 	<div class="overflow-x-auto">
 		<table { attrs... } class="table">
@@ -32,34 +30,34 @@ templ PlainText(content string) {
 templ TableExampleRow(name, email string) {
 	<tr>
 		<td>
-			@components.Checkbox(components.CheckboxProps{Name: email})
+			@Checkbox(CheckboxProps{Name: email})
 		</td>
 		<td>
-			@components.PlainText(name)
+			@PlainText(name)
 		</td>
 		<td>
-			@components.PlainText(email)
+			@PlainText(email)
 		</td>
 	</tr>
 }
 
 templ BasicTable() {
-	Table(
-	[]templ.Component{ 
-			components.Checkbox(
-				components.CheckboxProps{
+	@Table(
+		[]templ.Component{
+			Checkbox(
+				CheckboxProps{
 					Name: "all",
 				},
 			),
-			components.PlainText("Name"),
-			components.PlainText("Email"),
-		 },
-	[]templ.Component{ 
+			PlainText("Name"),
+			PlainText("Email"),
+		},
+		[]templ.Component{
 			TableExampleRow("John Doe", "john.doe@example.com"),
 			TableExampleRow("Jane Doe", "Jane.doe@example.com"),
 			TableExampleRow("Jim Smith", "jim.smith@example.com"),
 			TableExampleRow("Julie Smith", "julie.smith@example.com"),
-		 },
-	nil,
+		},
+		nil,
 	)
 }
