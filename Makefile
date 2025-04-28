@@ -1,5 +1,5 @@
 tg:
-	templ generate
+	templ generate --watch
 
 tcss:
 	tailwindcss -i ./assets/css/input.css -o ./assets/css/output.css
