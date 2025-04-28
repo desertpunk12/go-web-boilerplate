@@ -1,25 +1,15 @@
 package pages
 
 import "web-boilerplate/ui/layouts"
-import "web-boilerplate/ui/components"
 
 templ Login() {
 	@layouts.BaseLayout() {
-		<div class="flex justify-center items-center h-screen p-25">
-				<div class="flex justify-center items-center pt-4">
-					@components.Collapse(
-						components.CollapseProps{
-							Title:        "Click me to show/hide content",
-							TitleClass:   "text-xl font-medium",
-							Class:        "collapse-plus bg-base-300",
-							ContentClass: "bg-base-200",
-						}) {
-						<div class="pt-4">
-							<p>Collapse content</p>
-						</div>
-					}
-				</div>
-
+		<div class="flex justify-center items-center h-screen p-4">
+			<div class="card w-full max-w-96 gap-4">
+				<input type="email" placeholder="Email" class="input input-bordered w-full"/>
+				<input type="password" placeholder="Password" class="input input-bordered w-full"/>
+				<input type="submit" class="btn btn-primary" value="Login!"/>
+			</div>
 		</div>
 	}
 }
