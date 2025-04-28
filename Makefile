@@ -7,3 +7,6 @@ server:
 	--build.include_ext "go" \
 	--build.stop_on_error "false" \
 	--misc.clean_on_exit true
+
+tcss:
+    tailwindcss -i ./assets/css/input.css -o ./assets/css/output.css --watch`
