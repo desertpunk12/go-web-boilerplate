@@ -43,7 +43,7 @@ func Login() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex justify-center items-center h-screen p-4\"><div class=\"card w-full max-w-96 gap-4\"><input type=\"email\" placeholder=\"Email\" class=\"input input-bordered w-full\"> <input type=\"password\" placeholder=\"Password\" class=\"input input-bordered w-full\"> <input type=\"submit\" class=\"btn btn-primary\" value=\"Login!\"></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex justify-center items-center h-screen p-4\"><div class=\"card card-xl shadow-xl w-full max-w-96 gap-4 bg-neutral\"><div class=\"card-body items-center text-center\"><h2 class=\"card-title mb-4\">Login</h2><input type=\"email\" placeholder=\"Email\" class=\"input input-bordered w-full\"> <input type=\"password\" placeholder=\"Password\" class=\"input input-bordered w-full\"> <input type=\"submit\" class=\"btn btn-primary mt-8 w-75\" value=\"Login\"></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -46,9 +46,14 @@ func LoadAllConfig() error {
 
 	SECRET_KEY = os.Getenv("SECRET_KEY")
 
-	TOKEN_TTL, err = time.ParseDuration(os.Getenv("TOKEN_EXPIRE_TIME"))
-	if err != nil {
-		return fmt.Errorf("error parsing token expire time duration, %w", err)
+	expireRaw := os.Getenv("TOKEN_EXPIRE_TIME")
+	if expireRaw != "" {
+		TOKEN_TTL, err = time.ParseDuration(expireRaw)
+		if err != nil {
+			return fmt.Errorf("error parsing token expire time duration, %w", err)
+		}
+	} else {
+		TOKEN_TTL = time.Hour * 5
 	}
 
 	ALLOWED_ORIGINS = os.Getenv("ALLOWED_ORIGINS")

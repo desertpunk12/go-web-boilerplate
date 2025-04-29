@@ -1,6 +1,8 @@
 @source "../../ui/**/*.templ";
-@plugin "./daisyui.js";
-@plugin "./daisyui-theme.js" {
-    themes: dark --default;
-}
 @import "tailwindcss";
+@plugin "./daisyui.js" {
+    themes:
+        light --default,
+        dark --prefersdark,
+        luxury;
+}
