@@ -58,6 +58,24 @@ func main() {
 		return pages.Login().Render(c.Context(), c.Response().BodyWriter())
 	})
 
+	app.Get("/home", func(c fiber.Ctx) error {
+		c.RequestCtx().SetContentType("text/html")
+		var users []pages.User
+		users = append(users, pages.User{
+			ID:       "1",
+			Fullname: "admin",
+			Email:    "admin@example.com",
+			IsActive: true,
+		},
+			pages.User{
+				ID:       "2",
+				Fullname: "notadmin",
+				Email:    "notadmin@example.com",
+				IsActive: false,
+			})
+		return pages.Home(users).Render(c.Context(), c.Response().BodyWriter())
+	})
+
 	app.Get("/static*", static.New("", static.Config{
 		FS:     assets.Assets,
 		Browse: true,
