@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 	"web-boilerplate/assets"
-	"web-boilerplate/internal/hr/config"
+	"web-boilerplate/internal/hr-web/config"
 	"web-boilerplate/ui/pages"
 
 	"github.com/gofiber/fiber/v3"
