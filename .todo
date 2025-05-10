@@ -1,0 +1,16 @@
+API
+//TODO: Create route for login / 
+//TODO: Create route for getting currently logged in user /me
+
+
+WEB
+//TODO: Create frontend for login
+//TODO: Create basic home page for after login displaying user logged in
+
+
+
+
+
+All
+//TODO: decide how to approach validation for requests, maybe use go-validation
+//TODO:

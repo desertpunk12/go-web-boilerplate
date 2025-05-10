@@ -8,27 +8,6 @@ import (
 	"github.com/joho/godotenv"
 )
 
-type LOG_LEVEL_TYPE int8
-
-const (
-	LOG_LEVEL_NOTFOUND LOG_LEVEL_TYPE = iota - 1
-	LOG_LEVEL_INFO
-	LOG_LEVEL_WARN
-	LOG_LEVEL_DEBUG
-	LOG_LEVEL_ERROR
-	LOG_LEVEL_FATAL
-)
-
-var (
-	PORT            = "3000"
-	IS_PROD         = false
-	LOG_LEVEL       = LOG_LEVEL_DEBUG
-	SECRET_KEY      = "qweasd123"
-	ALLOWED_ORIGINS = ""
-	REDIS_KEYS_TTL  = time.Hour * 24 * 7 // 7 days
-	TOKEN_TTL       = time.Hour * 5      // 5 hours
-)
-
 func LoadAllConfig() error {
 	// Load env file
 	err := LoadEnvFile()
@@ -79,14 +58,6 @@ func LoadEnvFile() error {
 
 	return nil
 }
-
-// func SetupCorsConfig() cors.Config {
-// 	return cors.Config{
-// 		AllowCredentials: true,
-// 		AllowOrigins:     []string{"*"},
-// 		AllowHeaders:     []string{"Origin", " Content-Type", " Accept", " Accept-Language", " Content-Length"},
-// 	}
-// }
 
 func determineLogLevel(logLevel string) (LOG_LEVEL_TYPE, error) {
 	switch logLevel {
