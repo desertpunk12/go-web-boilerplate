@@ -27,6 +27,7 @@ var (
 	ALLOWED_ORIGINS = ""
 	REDIS_KEYS_TTL  = time.Hour * 24 * 7 // 7 days
 	TOKEN_TTL       = time.Hour * 5      // 5 hours
+	BASE_URL        = "http://localhost:3000"
 )
 
 func LoadAllConfig() error {

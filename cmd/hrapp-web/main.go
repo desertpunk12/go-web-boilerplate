@@ -4,7 +4,7 @@ import (
 	"os"
 	"web-boilerplate/assets"
 	"web-boilerplate/internal/hr-web/config"
-	"web-boilerplate/ui/pages"
+	"web-boilerplate/internal/hr-web/routes"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/static"
@@ -53,35 +53,14 @@ func main() {
 		})
 	}
 
-	app.Get("/", func(c fiber.Ctx) error {
-		c.RequestCtx().SetContentType("text/html")
-		return pages.Login().Render(c.Context(), c.Response().BodyWriter())
-	})
-
-	app.Get("/home", func(c fiber.Ctx) error {
-		c.RequestCtx().SetContentType("text/html")
-		var users []pages.User
-		users = append(users, pages.User{
-			ID:       "1",
-			Fullname: "admin",
-			Email:    "admin@example.com",
-			IsActive: true,
-		},
-			pages.User{
-				ID:       "2",
-				Fullname: "notadmin",
-				Email:    "notadmin@example.com",
-				IsActive: false,
-			})
-		return pages.Home(users).Render(c.Context(), c.Response().BodyWriter())
-	})
-
 	app.Get("/static*", static.New("", static.Config{
 		FS:     assets.Assets,
 		Browse: true,
 	}))
 
-	err = app.Listen(":3000")
+	routes.SetupRoutes(app)
+
+	err = app.Listen(":3001")
 	if err != nil {
 		panic(err)
 	}

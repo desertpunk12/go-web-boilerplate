@@ -13,7 +13,7 @@ type LoginParams struct {
 
 func LoginHandler(c fiber.Ctx) error {
 	var params LoginParams
-	err := c.Bind().Body(params)
+	err := c.Bind().Body(&params)
 	if err != nil {
 		return err
 	}

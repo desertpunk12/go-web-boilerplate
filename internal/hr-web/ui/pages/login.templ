@@ -1,0 +1,20 @@
+package pages
+
+import "web-boilerplate/ui/layouts"
+
+templ Login(base string) {
+	@layouts.BaseLayout() {
+		<div class="flex justify-center items-center h-screen p-4">
+			<div class="card card-xl shadow-xl w-full max-w-96 gap-4 bg-neutral">
+				<div class="card-body items-center text-center">
+					<form method="POST" action={ templ.SafeURL(base + "/v1/login") }>
+						<h2 class="card-title mb-4">Login</h2>
+						<input type="email" name="username" placeholder="Email" class="input input-bordered w-full"/>
+						<input type="password" name="password" placeholder="Password" class="input input-bordered w-full"/>
+						<input type="submit" class="btn btn-primary mt-8 w-75" value="Login"/>
+					</form>
+				</div>
+			</div>
+		</div>
+	}
+}

@@ -2,6 +2,8 @@ package main
 
 import (
 	"web-boilerplate/internal/hr-api/config"
+	"web-boilerplate/internal/hr-api/middlewares"
+	"web-boilerplate/internal/hr-api/routes"
 
 	"github.com/gofiber/fiber/v3"
 )
@@ -27,10 +29,16 @@ func main() {
 		})
 	}
 
-	//TODO: Setpu middlewares
-	
+	//TODO: Setup middlewares
+	middlewares.SetupMiddlewares(app)
 
 	//TODO: Setup routes
-	
-	
+	routes.SetupRoutes(app)
+
+	//Start Server
+	err = app.Listen(":3000")
+	if err != nil {
+		panic(err)
+	}
+
 }

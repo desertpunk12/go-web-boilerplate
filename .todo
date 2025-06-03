@@ -1,11 +1,16 @@
 API
-//TODO: Create route for login / 
+//TODO: Create route for login /
 //TODO: Create route for getting currently logged in user /me
+//TODO: add recover middleware
+//TODO: add logging middleware
+//TODO: format logging
 
 
 WEB
 //TODO: Create frontend for login
 //TODO: Create basic home page for after login displaying user logged in
+//TODO: Copy necessary middlewares from api
+//TODO: Create a customized 404 page
 
 
 
@@ -13,4 +18,6 @@ WEB
 
 All
 //TODO: decide how to approach validation for requests, maybe use go-validation
-//TODO:
+//TODO: Integrate Google Auth
+//TODO: Integrate Github Auth
+//TODO: Integrate Facebook Auth
