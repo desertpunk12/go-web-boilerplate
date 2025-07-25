@@ -9,7 +9,7 @@ import (
 )
 
 func LoginHandler(c fiber.Ctx) error { // TODO: change this according to library spec
-	return pages.Login(config.BASE_URL).Render(c.Context(), c.Response().BodyWriter())
+	return pages.Login(config.BASE_URL).Render(c, c.Response().BodyWriter())
 }
 
 func Login(username, password string) (any, error) {
