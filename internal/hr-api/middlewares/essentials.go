@@ -5,6 +5,7 @@ import (
 	"github.com/gofiber/fiber/v3/middleware/compress"
 	"github.com/gofiber/fiber/v3/middleware/cors"
 	"github.com/gofiber/fiber/v3/middleware/helmet"
+	"github.com/gofiber/fiber/v3/middleware/logger"
 )
 
 func SetupMiddlewaresEssentials(app *fiber.App) {
@@ -27,3 +28,10 @@ func SetupMiddlewareCORS(app *fiber.App) {
 		AllowHeaders:     []string{"Origin", " Content-Type", " Accept", " Accept-Language", " Content-Length"},
 	})
 }
+
+func SetupMiddlewareLogger(app *fiber.App) {
+	app.Use(logger.New(logger.Config{
+		Format: "",
+	}))
+}
+

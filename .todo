@@ -1,9 +1,16 @@
+//Create a web framework or an adapter for gofiber with generators that generate a route from a query
+//Create a generator tool that generates the route also generates the whole project if required directory structure is not found
+//Create a generator tool that generates the whole project structure
+
+
 API
-//TODO: Create route for login /
+//TODO: Create route for login
 //TODO: Create route for getting currently logged in user /me
 //TODO: add recover middleware
 //TODO: add logging middleware
 //TODO: format logging
+//TODO: add health check route checking db and other services
+
 
 
 WEB
@@ -21,3 +28,6 @@ All
 //TODO: Integrate Google Auth
 //TODO: Integrate Github Auth
 //TODO: Integrate Facebook Auth
+
+
+//TODO: Make a sample for testing
