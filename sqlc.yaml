@@ -1,0 +1,16 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    queries: "./internal/hr-api/repositories/users"
+    schema: "./internal/hr-api/repositories/migrations"
+    gen:
+      go:
+        package: "users"
+        out: "internal/hr-api/repositories/users"
+  - engine: "postgresql"
+    queries: "internal/hr-api/repositories/others"
+    schema: "internal/hr-api/repositories/migrations"
+    gen:
+      go:
+        package: "others"
+        out: "internal/hr-api/repositories/others"
