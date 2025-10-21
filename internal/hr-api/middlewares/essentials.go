@@ -1,16 +1,21 @@
 package middlewares
 
 import (
+	"os"
+
+	"github.com/gofiber/contrib/fiberzerolog"
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/compress"
 	"github.com/gofiber/fiber/v3/middleware/cors"
 	"github.com/gofiber/fiber/v3/middleware/helmet"
 	"github.com/gofiber/fiber/v3/middleware/logger"
+	"github.com/rs/zerolog"
 )
 
 func SetupMiddlewaresEssentials(app *fiber.App) {
 	SetupMiddlewareHelmet(app)
 	SetupMiddlewareCompress(app)
+	SetupMiddlewareFiberZerolog(app)
 }
 
 func SetupMiddlewareCompress(app *fiber.App) {
@@ -29,9 +34,15 @@ func SetupMiddlewareCORS(app *fiber.App) {
 	})
 }
 
-func SetupMiddlewareLogger(app *fiber.App) {
-	app.Use(logger.New(logger.Config{
-		Format: "",
+func SetupMiddlewareFiberZerolog(app *fiber.App) {
+	logger := zerolog.New(os.Stderr).With().Timestamp().Logger()
+	app.Use(fiberzerolog.New(fiberzerolog.Config{
+		Logger: &logger,
 	}))
 }
 
+func SetupMiddlewareLogger(app *fiber.App) {
+	app.Use(logger.New(logger.Config{
+		Format: "[${time}] ${ip} ${status} - ${latency} ${method} ${path} ${error}",
+	}))
+}

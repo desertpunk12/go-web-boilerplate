@@ -11,7 +11,7 @@ import (
 func SetupRoutes(app *fiber.App) {
 	app.Get("/", func(c fiber.Ctx) error {
 		c.RequestCtx().SetContentType("text/html")
-		return pages.Login(config.BASE_URL).Render(c.Context(), c.Response().BodyWriter())
+		return pages.Login(config.BASE_URL).Render(c, c.Response().BodyWriter())
 	})
 
 	app.Get("/home", func(c fiber.Ctx) error {
@@ -29,6 +29,6 @@ func SetupRoutes(app *fiber.App) {
 				Email:    "notadmin@example.com",
 				IsActive: false,
 			})
-		return gpages.Home(users).Render(c.Context(), c.Response().BodyWriter())
+		return gpages.Home(users).Render(c, c.Response().BodyWriter())
 	})
 }
