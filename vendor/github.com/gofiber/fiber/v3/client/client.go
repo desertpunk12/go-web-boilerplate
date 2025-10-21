@@ -16,7 +16,7 @@ import (
 	"github.com/fxamacker/cbor/v2"
 	"github.com/gofiber/fiber/v3/log"
 
-	"github.com/gofiber/utils/v2"
+	utils "github.com/gofiber/utils/v2"
 
 	"github.com/valyala/fasthttp"
 	"github.com/valyala/fasthttp/fasthttpproxy"
@@ -192,8 +192,8 @@ func (c *Client) SetRootCertificate(path string) *Client {
 		c.logger.Panicf("client: %v", err)
 	}
 	defer func() {
-		if err := file.Close(); err != nil {
-			c.logger.Panicf("client: failed to close file: %v", err)
+		if closeErr := file.Close(); closeErr != nil {
+			c.logger.Panicf("client: failed to close file: %v", closeErr)
 		}
 	}()
 
@@ -662,7 +662,7 @@ func NewWithClient(c *fasthttp.Client) *Client {
 		cborMarshal:          cbor.Marshal,
 		cborUnmarshal:        cbor.Unmarshal,
 		xmlUnmarshal:         xml.Unmarshal,
-		logger:               log.DefaultLogger(),
+		logger:               log.DefaultLogger[*log.Logger](),
 	}
 }
 

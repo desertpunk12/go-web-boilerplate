@@ -7,11 +7,10 @@ package fiber
 import (
 	"bytes"
 	"fmt"
-	"html"
 	"slices"
 	"sync/atomic"
 
-	"github.com/gofiber/utils/v2"
+	utils "github.com/gofiber/utils/v2"
 	"github.com/valyala/fasthttp"
 )
 
@@ -34,7 +33,8 @@ type Router interface {
 
 	Group(prefix string, handlers ...Handler) Router
 
-	Route(path string) Register
+	RouteChain(path string) Register
+	Route(prefix string, fn func(router Router), name ...string) Router
 
 	Name(name string) Router
 }
@@ -95,7 +95,9 @@ func (r *Route) match(detectionPath, path string, params *[maxParams]string) boo
 				return true
 			}
 		} else if len(detectionPath) >= plen && detectionPath[:plen] == r.path {
-			return true
+			if hasPartialMatchBoundary(detectionPath, plen) {
+				return true
+			}
 		}
 	} else if len(r.path) == len(detectionPath) && detectionPath == r.path {
 		// Check exact match
@@ -117,7 +119,6 @@ func (app *App) next(c *DefaultCtx) (bool, error) {
 	lenr := len(tree) - 1
 
 	indexRoute := c.indexRoute
-	var err error
 
 	// Loop over the route stack starting from previous index
 	for indexRoute < lenr {
@@ -153,12 +154,10 @@ func (app *App) next(c *DefaultCtx) (bool, error) {
 	}
 
 	// If c.Next() does not match, return 404
-	err = NewError(StatusNotFound, "Cannot "+c.Method()+" "+html.EscapeString(c.getPathOriginal()))
-
 	// If no match, scan stack again if other methods match the request
 	// Moved from app.handler because middleware may break the route chain
 	if c.matched {
-		return false, err
+		return false, ErrNotFound
 	}
 
 	exists := false
@@ -201,9 +200,9 @@ func (app *App) next(c *DefaultCtx) (bool, error) {
 		c.indexRoute = indexRoute
 	}
 	if exists {
-		err = ErrMethodNotAllowed
+		return false, ErrMethodNotAllowed
 	}
-	return false, err
+	return false, ErrNotFound
 }
 
 func (app *App) nextCustom(c CustomCtx) (bool, error) {
@@ -217,7 +216,6 @@ func (app *App) nextCustom(c CustomCtx) (bool, error) {
 	lenr := len(tree) - 1
 
 	indexRoute := c.getIndexRoute()
-	var err error
 
 	// Loop over the route stack starting from previous index
 	for indexRoute < lenr {
@@ -251,12 +249,10 @@ func (app *App) nextCustom(c CustomCtx) (bool, error) {
 	}
 
 	// If c.Next() does not match, return 404
-	err = NewError(StatusNotFound, "Cannot "+c.Method()+" "+html.EscapeString(c.getPathOriginal()))
-
 	// If no match, scan stack again if other methods match the request
 	// Moved from app.handler because middleware may break the route chain
 	if c.getMatched() {
-		return false, err
+		return false, ErrNotFound
 	}
 
 	exists := false
@@ -299,9 +295,9 @@ func (app *App) nextCustom(c CustomCtx) (bool, error) {
 		c.setIndexRoute(indexRoute)
 	}
 	if exists {
-		err = ErrMethodNotAllowed
+		return false, ErrMethodNotAllowed
 	}
-	return false, err
+	return false, ErrNotFound
 }
 
 func (app *App) requestHandler(rctx *fasthttp.RequestCtx) {
@@ -579,7 +575,7 @@ func (app *App) addRoute(method string, route *Route) {
 	}
 }
 
-// BuildTree rebuilds the prefix tree from the previously registered routes.
+// RebuildTree rebuilds the prefix tree from the previously registered routes.
 // This method is useful when you want to register routes dynamically after the app has started.
 // It is not recommended to use this method on production environments because rebuilding
 // the tree is performance-intensive and not thread-safe in runtime. Since building the tree

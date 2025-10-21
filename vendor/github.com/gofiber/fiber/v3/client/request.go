@@ -16,7 +16,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v3"
-	"github.com/gofiber/utils/v2"
+	utils "github.com/gofiber/utils/v2"
 	"github.com/valyala/fasthttp"
 )
 
@@ -134,15 +134,18 @@ type pair struct {
 	v []string
 }
 
+// Len implements sort.Interface and reports the number of tracked keys.
 func (p *pair) Len() int {
 	return len(p.k)
 }
 
+// Swap implements sort.Interface and swaps the entries at the provided indices.
 func (p *pair) Swap(i, j int) {
 	p.k[i], p.k[j] = p.k[j], p.k[i]
 	p.v[i], p.v[j] = p.v[j], p.v[i]
 }
 
+// Less implements sort.Interface and orders entries lexicographically by key.
 func (p *pair) Less(i, j int) bool {
 	return p.k[i] < p.k[j]
 }
@@ -215,9 +218,13 @@ func (r *Request) Param(key string) []string {
 func (r *Request) Params() iter.Seq2[string, []string] {
 	return func(yield func(string, []string) bool) {
 		vals := r.params.Len()
+		if vals == 0 {
+			return
+		}
+		prealloc := make([]string, 2*vals)
 		p := pair{
-			k: make([]string, 0, vals),
-			v: make([]string, 0, vals),
+			k: prealloc[:0:vals],
+			v: prealloc[vals : vals : 2*vals],
 		}
 		for k, v := range r.params.All() {
 			p.k = append(p.k, utils.UnsafeString(k))
@@ -450,9 +457,13 @@ func (r *Request) FormData(key string) []string {
 func (r *Request) AllFormData() iter.Seq2[string, []string] {
 	return func(yield func(string, []string) bool) {
 		vals := r.formData.Len()
+		if vals == 0 {
+			return
+		}
+		prealloc := make([]string, 2*vals)
 		p := pair{
-			k: make([]string, 0, vals),
-			v: make([]string, 0, vals),
+			k: prealloc[:0:vals],
+			v: prealloc[vals : vals : 2*vals],
 		}
 		for k, v := range r.formData.All() {
 			p.k = append(p.k, utils.UnsafeString(k))

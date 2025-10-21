@@ -21,7 +21,7 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/gofiber/utils/v2"
+	utils "github.com/gofiber/utils/v2"
 
 	"github.com/gofiber/fiber/v3/log"
 
@@ -66,7 +66,7 @@ func getTLSConfig(ln net.Listener) *tls.Config {
 			// Get element from pointer
 			if elem := newval.Elem(); elem.IsValid() {
 				// Cast value to *tls.Config
-				c, ok := elem.Interface().(*tls.Config)
+				c, ok := reflect.TypeAssert[*tls.Config](elem)
 				if !ok {
 					panic(errors.New("failed to type-assert to *tls.Config"))
 				}
@@ -100,7 +100,7 @@ func readContent(rf io.ReaderFrom, name string) (int64, error) {
 // Non-ASCII bytes are encoded as well so the result is always ASCII.
 func (app *App) quoteString(raw string) string {
 	bb := bytebufferpool.Get()
-	quoted := app.getString(fasthttp.AppendQuotedArg(bb.B, app.getBytes(raw)))
+	quoted := app.toString(fasthttp.AppendQuotedArg(bb.B, app.toBytes(raw)))
 	bytebufferpool.Put(bb)
 	return quoted
 }
@@ -135,7 +135,7 @@ func (app *App) quoteRawString(raw string) string {
 		}
 	}
 
-	return app.getString(bb.B)
+	return app.toString(bb.B)
 }
 
 // isASCII reports whether the provided string contains only ASCII characters.
@@ -194,21 +194,72 @@ func acceptsOffer(spec, offer string, _ headerParams) bool {
 	return utils.EqualFold(spec, offer)
 }
 
-// acceptsLanguageOffer determines if a language tag offer matches a range
+// acceptsLanguageOfferBasic determines if a language tag offer matches a range
 // according to RFC 4647 Basic Filtering.
 // A match occurs if the range exactly equals the tag or is a prefix of the tag
-// followed by a hyphen. The comparison is case-insensitive. A trailing '*'
-// wildcard in the range matches any tag.
-func acceptsLanguageOffer(spec, offer string, _ headerParams) bool {
-	if len(spec) >= 1 && spec[len(spec)-1] == '*' {
+// followed by a hyphen. The comparison is case-insensitive. Only a single "*"
+// as the entire range is allowed. Any "*" appearing after a hyphen renders the
+// range invalid and will not match.
+func acceptsLanguageOfferBasic(spec, offer string, _ headerParams) bool {
+	if spec == "*" {
 		return true
 	}
-
+	if i := strings.IndexByte(spec, '*'); i != -1 {
+		return false
+	}
 	if utils.EqualFold(spec, offer) {
 		return true
 	}
+	return len(offer) > len(spec) &&
+		utils.EqualFold(offer[:len(spec)], spec) &&
+		offer[len(spec)] == '-'
+}
 
-	return len(offer) > len(spec) && utils.EqualFold(offer[:len(spec)], spec) && offer[len(spec)] == '-'
+// acceptsLanguageOfferExtended determines if a language tag offer matches a
+// range according to RFC 4647 Extended Filtering (§3.3.2).
+// - Case-insensitive comparisons
+// - '*' matches zero or more subtags (can “slide”)
+// - Unspecified subtags are treated like '*' (so trailing/extraneous tag subtags are fine)
+// - Matching fails if sliding encounters a singleton (incl. 'x')
+func acceptsLanguageOfferExtended(spec, offer string, _ headerParams) bool {
+	if spec == "*" {
+		return true
+	}
+	if spec == "" || offer == "" {
+		return false
+	}
+
+	rs := strings.Split(spec, "-")
+	ts := strings.Split(offer, "-")
+
+	// Step 2: first subtag must match (or be '*')
+	if !(rs[0] == "*" || utils.EqualFold(rs[0], ts[0])) {
+		return false
+	}
+
+	i, j := 1, 1 // i = range index, j = tag index
+	for i < len(rs) {
+		if rs[i] == "*" { // 3.A: '*' matches zero or more subtags
+			i++
+			continue
+		}
+		if j >= len(ts) { // 3.B: ran out of tag subtags
+			return false
+		}
+		if utils.EqualFold(rs[i], ts[j]) { // 3.C: exact subtag match
+			i++
+			j++
+			continue
+		}
+		// 3.D: singleton barrier (one letter or digit, incl. 'x')
+		if len(ts[j]) == 1 {
+			return false
+		}
+		// 3.E: slide forward in the tag and try again
+		j++
+	}
+	// 4: matched all range subtags
+	return true
 }
 
 // acceptsOfferType This function determines if an offer type matches a given specification.
@@ -603,7 +654,7 @@ func matchEtagStrong(s, etag string) bool {
 // weak as defined by RFC 9110 §8.8.3.2.
 func (app *App) isEtagStale(etag string, noneMatchBytes []byte) bool {
 	var start, end int
-	header := utils.Trim(app.getString(noneMatchBytes), ' ')
+	header := utils.Trim(app.toString(noneMatchBytes), ' ')
 
 	// Short-circuit the wildcard case: "*" never counts as stale.
 	if header == "*" {
@@ -620,7 +671,7 @@ func (app *App) isEtagStale(etag string, noneMatchBytes []byte) bool {
 				end = i + 1
 			}
 		case 0x2c:
-			if matchEtag(app.getString(noneMatchBytes[start:end]), etag) {
+			if matchEtag(app.toString(noneMatchBytes[start:end]), etag) {
 				return false
 			}
 			start = i + 1
@@ -630,7 +681,7 @@ func (app *App) isEtagStale(etag string, noneMatchBytes []byte) bool {
 		}
 	}
 
-	return !matchEtag(app.getString(noneMatchBytes[start:end]), etag)
+	return !matchEtag(app.toString(noneMatchBytes[start:end]), etag)
 }
 
 func parseAddr(raw string) (string, string) {
@@ -699,6 +750,7 @@ type testConn struct {
 	sync.Mutex
 }
 
+// Read implements net.Conn by reading from the buffered input.
 func (c *testConn) Read(b []byte) (int, error) {
 	c.Lock()
 	defer c.Unlock()
@@ -706,6 +758,7 @@ func (c *testConn) Read(b []byte) (int, error) {
 	return c.r.Read(b) //nolint:wrapcheck // This must not be wrapped
 }
 
+// Write implements net.Conn by appending to the buffered output.
 func (c *testConn) Write(b []byte) (int, error) {
 	c.Lock()
 	defer c.Unlock()
@@ -716,6 +769,7 @@ func (c *testConn) Write(b []byte) (int, error) {
 	return c.w.Write(b) //nolint:wrapcheck // This must not be wrapped
 }
 
+// Close marks the connection as closed and prevents further writes.
 func (c *testConn) Close() error {
 	c.Lock()
 	defer c.Unlock()
@@ -724,17 +778,26 @@ func (c *testConn) Close() error {
 	return nil
 }
 
-func (*testConn) LocalAddr() net.Addr                { return &net.TCPAddr{Port: 0, Zone: "", IP: net.IPv4zero} }
-func (*testConn) RemoteAddr() net.Addr               { return &net.TCPAddr{Port: 0, Zone: "", IP: net.IPv4zero} }
-func (*testConn) SetDeadline(_ time.Time) error      { return nil }
-func (*testConn) SetReadDeadline(_ time.Time) error  { return nil }
+// LocalAddr implements net.Conn and returns a placeholder address.
+func (*testConn) LocalAddr() net.Addr { return &net.TCPAddr{Port: 0, Zone: "", IP: net.IPv4zero} }
+
+// RemoteAddr implements net.Conn and returns a placeholder address.
+func (*testConn) RemoteAddr() net.Addr { return &net.TCPAddr{Port: 0, Zone: "", IP: net.IPv4zero} }
+
+// SetDeadline implements net.Conn but is a no-op for the in-memory connection.
+func (*testConn) SetDeadline(_ time.Time) error { return nil }
+
+// SetReadDeadline implements net.Conn but is a no-op for the in-memory connection.
+func (*testConn) SetReadDeadline(_ time.Time) error { return nil }
+
+// SetWriteDeadline implements net.Conn but is a no-op for the in-memory connection.
 func (*testConn) SetWriteDeadline(_ time.Time) error { return nil }
 
-func getStringImmutable(b []byte) string {
+func toStringImmutable(b []byte) string {
 	return string(b)
 }
 
-func getBytesImmutable(s string) []byte {
+func toBytesImmutable(s string) []byte {
 	return []byte(s)
 }
 
@@ -918,22 +981,28 @@ func genericParseType[V GenericType](str string) (V, error) {
 	}
 }
 
+// GenericType enumerates the values that can be parsed from strings by the
+// generic helper functions.
 type GenericType interface {
 	GenericTypeInteger | GenericTypeFloat | bool | string | []byte
 }
 
+// GenericTypeInteger is the union of all supported integer types.
 type GenericTypeInteger interface {
 	GenericTypeIntegerSigned | GenericTypeIntegerUnsigned
 }
 
+// GenericTypeIntegerSigned is the union of supported signed integer types.
 type GenericTypeIntegerSigned interface {
 	int | int8 | int16 | int32 | int64
 }
 
+// GenericTypeIntegerUnsigned is the union of supported unsigned integer types.
 type GenericTypeIntegerUnsigned interface {
 	uint | uint8 | uint16 | uint32 | uint64
 }
 
+// GenericTypeFloat is the union of supported floating-point types.
 type GenericTypeFloat interface {
 	float32 | float64
 }

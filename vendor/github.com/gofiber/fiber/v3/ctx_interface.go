@@ -10,6 +10,8 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
+// CustomCtx extends Ctx with the additional methods required by Fiber's
+// internals and middleware helpers.
 type CustomCtx interface {
 	Ctx
 
@@ -30,14 +32,16 @@ type CustomCtx interface {
 	setRoute(route *Route)
 }
 
+// NewDefaultCtx constructs the default context implementation bound to the
+// provided application.
 func NewDefaultCtx(app *App) *DefaultCtx {
 	// return ctx
 	ctx := &DefaultCtx{
 		// Set app reference
 		app: app,
 	}
-	ctx.req = &DefaultReq{ctx: ctx}
-	ctx.res = &DefaultRes{ctx: ctx}
+	ctx.DefaultReq.c = ctx
+	ctx.DefaultRes.c = ctx
 
 	return ctx
 }
