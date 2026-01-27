@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"log"
-
 	"github.com/gofiber/fiber/v3"
 )
 
@@ -11,23 +9,25 @@ type LoginParams struct {
 	Password string `json:"password"`
 }
 
-func LoginHandler(c fiber.Ctx) error {
+func (h *Handler) Login(c fiber.Ctx) error {
 	var params LoginParams
 	err := c.Bind().Body(&params)
 	if err != nil {
+		h.Log.Error(err, "failed to bind body")
 		return err
 	}
-	log.Print(params)
+	h.Log.Info("login attempt", "params", params)
 
-	err = login()
+	err = h.processLogin()
 	if err != nil {
+		h.Log.Error(err, "login process failed")
 		return err
 	}
 
 	return c.JSON(params)
 }
 
-func login() error {
-
-	return nil
+func (h *Handler) processLogin() error {
+	// Use h.DB here
+	return h.DB.Ping()
 }

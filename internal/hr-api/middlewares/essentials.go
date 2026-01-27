@@ -15,7 +15,6 @@ import (
 func SetupMiddlewaresEssentials(app *fiber.App) {
 	SetupMiddlewareHelmet(app)
 	SetupMiddlewareCompress(app)
-	SetupMiddlewareFiberZerolog(app)
 }
 
 func SetupMiddlewareCompress(app *fiber.App) {
