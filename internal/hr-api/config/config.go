@@ -20,7 +20,7 @@ func LoadAllConfig() error {
 		return err
 	}
 
-	PORT = os.Getenv("PORT")
+	BASE_URL = os.Getenv("BASE_URL")
 	IS_PROD = os.Getenv("IS_PROD") == "true"
 
 	SECRET_KEY = os.Getenv("SECRET_KEY")

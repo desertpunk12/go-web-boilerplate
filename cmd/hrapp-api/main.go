@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"web-boilerplate/internal/hr-api/config"
 	"web-boilerplate/internal/hr-api/db"
@@ -49,8 +50,9 @@ func main() {
 	// Setup routes
 	routes.SetupRoutes(app, logInst, dbInst)
 
+	fmt.Printf("baseurl:%s\n", config.BASE_URL)
 	//Start Server
-	err = app.Listen(":" + config.PORT)
+	err = app.Listen(config.BASE_URL)
 	if err != nil {
 		logInst.Fatal().Err(err).Msg("server failed to start")
 	}

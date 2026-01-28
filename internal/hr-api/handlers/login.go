@@ -2,8 +2,13 @@ package handlers
 
 import (
 	"context"
+	"time"
+	"web-boilerplate/internal/hr-api/config"
+	"web-boilerplate/shared/helpers"
 
 	"github.com/gofiber/fiber/v3"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 )
 
 type LoginParams struct {
@@ -16,20 +21,49 @@ func (h *Handler) Login(c fiber.Ctx) error {
 	err := c.Bind().Body(&params)
 	if err != nil {
 		h.Log.Error(err, "failed to bind body")
-		return err
+		return fiber.ErrBadRequest
 	}
-	h.Log.Info("login attempt", "params", params)
 
-	err = h.processLogin()
+	// 1. Fetch user from DB
+	user, err := h.Repo.GetUserByUsername(context.Background(), params.Username)
 	if err != nil {
-		h.Log.Error(err, "login process failed")
-		return err
+		h.Log.Error(err, "user not found or db error")
+		return fiber.ErrUnauthorized
 	}
 
-	return c.JSON(params)
-}
+	// 2. Hash provided password for comparison
+	hashedPassword, err := helpers.HashText(params.Password)
+	if err != nil {
+		h.Log.Error(err, "failed to hash password")
+		return fiber.ErrInternalServerError
+	}
 
-func (h *Handler) processLogin() error {
-	// Use h.DB here
-	return h.Pool.Ping(context.Background())
+	// 3. Verify password
+	if user.Password != hashedPassword {
+		h.Log.Info("invalid password attempt")
+		return fiber.ErrUnauthorized
+	}
+
+	// 4. Generate JWT Token
+	// Convert pgtype.UUID to google/uuid for easier string handling if needed,
+	// but we can just use the bytes directly for formatting or use a string helper.
+	userID := uuid.UUID(user.ID.Bytes).String()
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"id":  userID,
+		"exp": time.Now().Add(config.TOKEN_TTL).Unix(),
+	})
+
+	tokenString, err := token.SignedString([]byte(config.SECRET_KEY))
+	if err != nil {
+		h.Log.Error(err, "failed to sign token")
+		return fiber.ErrInternalServerError
+	}
+
+	h.Log.Info("login successful", "username", params.Username, "id", userID)
+
+	return c.JSON(fiber.Map{
+		"token": tokenString,
+		"id":    userID,
+	})
 }

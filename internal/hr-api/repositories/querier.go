@@ -17,6 +17,7 @@ type Querier interface {
 	DeleteUser(ctx context.Context, id pgtype.UUID) error
 	GetEmployee(ctx context.Context, id pgtype.UUID) (Employee, error)
 	GetUser(ctx context.Context, id pgtype.UUID) (User, error)
+	GetUserByUsername(ctx context.Context, username string) (User, error)
 	ListEmployees(ctx context.Context) ([]Employee, error)
 	ListUsers(ctx context.Context) ([]User, error)
 	UpdateEmployee(ctx context.Context, arg UpdateEmployeeParams) (Employee, error)

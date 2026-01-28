@@ -1,5 +1,5 @@
 tg:
-	templ generate --watch --proxy="http://localhost:3001" --cmd="go run ./cmd/hrapp-web/main.go"
+	templ generate --watch --proxy="http://localhost:4000" --cmd="go run ./cmd/hrapp-web/main.go"
 
 be:
 	go run ./cmd/hrapp-api/main.go

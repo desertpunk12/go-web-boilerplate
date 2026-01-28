@@ -20,14 +20,14 @@ const (
 )
 
 var (
-	PORT            = "3000"
 	IS_PROD         = false
 	LOG_LEVEL       = LOG_LEVEL_DEBUG
 	SECRET_KEY      = "qweasd123"
 	ALLOWED_ORIGINS = ""
 	REDIS_KEYS_TTL  = time.Hour * 24 * 7 // 7 days
 	TOKEN_TTL       = time.Hour * 5      // 5 hours
-	BASE_URL        = "http://localhost:3000"
+	BASE_URL        = "localhost:4000"
+	API_URL         = "localhost:3000"
 )
 
 func LoadAllConfig() error {
@@ -42,7 +42,8 @@ func LoadAllConfig() error {
 		return err
 	}
 
-	PORT = os.Getenv("PORT")
+	BASE_URL = os.Getenv("BASE_URL")
+	API_URL = os.Getenv("API_URL")
 	IS_PROD = os.Getenv("IS_PROD") == "true"
 
 	SECRET_KEY = os.Getenv("SECRET_KEY")
@@ -69,15 +70,18 @@ func LoadAllConfig() error {
 
 	return nil
 }
-
 func LoadEnvFile() error {
-	if _, err := os.Stat(".env"); !os.IsNotExist(err) {
-		err := godotenv.Load(".env")
-		if err != nil {
-			return err
+	paths := []string{".env", "cmd/hrapp-web/.env"}
+	for _, path := range paths {
+		if _, err := os.Stat(path); !os.IsNotExist(err) {
+			err := godotenv.Load(path)
+			if err != nil {
+				return err
+			}
+			fmt.Printf("Loaded .env from: %s\n", path)
+			return nil
 		}
 	}
-
 	return nil
 }
 

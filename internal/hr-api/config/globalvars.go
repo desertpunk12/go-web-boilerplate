@@ -14,7 +14,7 @@ const (
 )
 
 var (
-	PORT            = "3000"
+	BASE_URL        = "localhost:3000"
 	IS_PROD         = false
 	LOG_LEVEL       = LOG_LEVEL_DEBUG
 	SECRET_KEY      = "qweasd123"

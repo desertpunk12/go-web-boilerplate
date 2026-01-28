@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"web-boilerplate/assets"
 	"web-boilerplate/internal/hr-web/config"
@@ -60,7 +61,8 @@ func main() {
 
 	routes.SetupRoutes(app)
 
-	err = app.Listen(":3001")
+	fmt.Printf("baseurl:%s\n", config.BASE_URL)
+	err = app.Listen(config.BASE_URL)
 	if err != nil {
 		panic(err)
 	}
