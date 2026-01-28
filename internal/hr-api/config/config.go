@@ -49,13 +49,17 @@ func LoadAllConfig() error {
 }
 
 func LoadEnvFile() error {
-	if _, err := os.Stat(".env"); !os.IsNotExist(err) {
-		err := godotenv.Load(".env")
-		if err != nil {
-			return err
+	paths := []string{".env", "cmd/hrapp-api/.env"}
+	for _, path := range paths {
+		if _, err := os.Stat(path); !os.IsNotExist(err) {
+			err := godotenv.Load(path)
+			if err != nil {
+				return err
+			}
+			fmt.Printf("Loaded .env from: %s\n", path)
+			return nil
 		}
 	}
-
 	return nil
 }
 

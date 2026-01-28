@@ -1,16 +1,12 @@
 version: "2"
 sql:
   - engine: "postgresql"
-    queries: "./internal/hr-api/repositories/users"
-    schema: "./internal/hr-api/repositories/migrations"
-    gen:
-      go:
-        package: "users"
-        out: "internal/hr-api/repositories/users"
-  - engine: "postgresql"
-    queries: "internal/hr-api/repositories/others"
+    queries: "internal/hr-api/repositories/queries"
     schema: "internal/hr-api/repositories/migrations"
     gen:
       go:
-        package: "others"
-        out: "internal/hr-api/repositories/others"
+        package: "repositories"
+        out: "internal/hr-api/repositories"
+        sql_package: "pgx/v5"
+        emit_json_tags: true
+        emit_interface: true

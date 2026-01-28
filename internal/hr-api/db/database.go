@@ -1,42 +1,38 @@
 package db
 
 import (
-	"database/sql"
-	"time"
+	"context"
+	"fmt"
+
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Database struct {
-	// Connection pool usually
-	// For now using *sql.DB as placeholder or real implementation if driver was present
-	Conn *sql.DB
+	Pool *pgxpool.Pool
 }
 
-func New(connString string) (*Database, error) {
-	// In a real app, we would open connection here
-	// db, err := sql.Open("postgres", connString)
-
-	// For now, returning a dummy successful struct as no driver is strictly referenced yet in go.mod for pgx/pq
-	// But we saw no driver. We will just return a struct.
-
-	return &Database{}, nil
-}
-
-func (d *Database) Ping() error {
-	if d.Conn != nil {
-		return d.Conn.Ping()
+func New(ctx context.Context, connString string) (*Database, error) {
+	config, err := pgxpool.ParseConfig(connString)
+	if err != nil {
+		return nil, fmt.Errorf("unable to parse connection string: %w", err)
 	}
-	return nil
-}
 
-// Close closes the database connection
-func (d *Database) Close() error {
-	if d.Conn != nil {
-		return d.Conn.Close()
+	pool, err := pgxpool.NewWithConfig(ctx, config)
+	if err != nil {
+		return nil, fmt.Errorf("unable to create connection pool: %w", err)
 	}
-	return nil
+
+	if err := pool.Ping(ctx); err != nil {
+		return nil, fmt.Errorf("unable to ping database: %w", err)
+	}
+
+	return &Database{Pool: pool}, nil
 }
 
-// In the future, methods that query the DB would hang off *Database
-func (d *Database) Now() time.Time {
-	return time.Now()
+func (d *Database) Close() {
+	d.Pool.Close()
+}
+
+func (d *Database) Ping(ctx context.Context) error {
+	return d.Pool.Ping(ctx)
 }

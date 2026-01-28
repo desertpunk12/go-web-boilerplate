@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"os"
 	"web-boilerplate/internal/hr-api/config"
 	"web-boilerplate/internal/hr-api/db"
@@ -25,7 +26,7 @@ func main() {
 	// Initialize Dependencies
 	logInst := loggerpkg.New(os.Getenv("LOG_LEVEL"))
 
-	dbInst, err := db.New(os.Getenv("DATABASE_URL"))
+	dbInst, err := db.New(context.Background(), os.Getenv("DATABASE_URL"))
 	if err != nil {
 		logInst.Fatal().Err(err).Msg("failed to initialize database")
 	}
@@ -42,8 +43,8 @@ func main() {
 	}
 
 	// Setup middlewares
-	middlewares.SetupMiddlewares(app)
 	middlewares.SetupLogger(app, logInst)
+	middlewares.SetupMiddlewares(app)
 
 	// Setup routes
 	routes.SetupRoutes(app, logInst, dbInst)

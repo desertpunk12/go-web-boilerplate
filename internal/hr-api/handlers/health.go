@@ -7,7 +7,7 @@ import (
 func (h *Handler) Health(ctx fiber.Ctx) error {
 	// check for db connection
 	// check for db connection
-	if err := h.DB.Ping(); err != nil {
+	if err := h.Pool.Ping(ctx.Context()); err != nil {
 		h.Log.Error(err, "database ping failed")
 		return ctx.Status(fiber.StatusInternalServerError).SendString("Database Unreachable")
 	}

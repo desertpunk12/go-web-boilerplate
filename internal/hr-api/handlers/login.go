@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"context"
+
 	"github.com/gofiber/fiber/v3"
 )
 
@@ -29,5 +31,5 @@ func (h *Handler) Login(c fiber.Ctx) error {
 
 func (h *Handler) processLogin() error {
 	// Use h.DB here
-	return h.DB.Ping()
+	return h.Pool.Ping(context.Background())
 }
