@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"errors"
 	"time"
 	"web-boilerplate/internal/hr-api/config"
 	"web-boilerplate/shared/helpers"
@@ -9,6 +10,7 @@ import (
 	"github.com/gofiber/fiber/v3"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type LoginParams struct {
@@ -24,24 +26,20 @@ func (h *Handler) Login(c fiber.Ctx) error {
 		return fiber.ErrBadRequest
 	}
 
-	// 1. Fetch user from DB
 	user, err := h.Repo.GetUserByUsername(context.Background(), params.Username)
 	if err != nil {
 		h.Log.Error(err, "user not found or db error")
 		return fiber.ErrUnauthorized
 	}
 
-	// 2. Hash provided password for comparison
-	hashedPassword, err := helpers.HashText(params.Password)
+	err = helpers.CompareHashAndPassword(user.Password, params.Password)
 	if err != nil {
-		h.Log.Error(err, "failed to hash password")
+		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+			h.Log.Info("invalid password attempt")
+			return fiber.ErrUnauthorized
+		}
+		h.Log.Error(err, "failed to compare password")
 		return fiber.ErrInternalServerError
-	}
-
-	// 3. Verify password
-	if user.Password != hashedPassword {
-		h.Log.Info("invalid password attempt")
-		return fiber.ErrUnauthorized
 	}
 
 	// 4. Generate JWT Token

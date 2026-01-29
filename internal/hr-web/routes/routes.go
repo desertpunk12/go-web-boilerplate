@@ -2,6 +2,7 @@ package routes
 
 import (
 	"web-boilerplate/internal/hr-web/config"
+	"web-boilerplate/internal/hr-web/handlers/auth"
 	"web-boilerplate/internal/hr-web/ui/pages"
 	gpages "web-boilerplate/ui/pages"
 
@@ -13,6 +14,8 @@ func SetupRoutes(app *fiber.App) {
 		c.RequestCtx().SetContentType("text/html")
 		return pages.Login(config.BASE_URL).Render(c, c.Response().BodyWriter())
 	})
+
+	app.Post("/v1/login", auth.Login)
 
 	app.Get("/home", func(c fiber.Ctx) error {
 		c.RequestCtx().SetContentType("text/html")

@@ -62,6 +62,7 @@ func main() {
 	routes.SetupRoutes(app)
 
 	fmt.Printf("baseurl:%s\n", config.BASE_URL)
+	fmt.Printf("apiurl:%s\n", config.API_URL)
 	err = app.Listen(config.BASE_URL)
 	if err != nil {
 		panic(err)

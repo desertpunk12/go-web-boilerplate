@@ -9,7 +9,7 @@ templ Login(base string) {
 				<div class="card-body items-center text-center">
 					<form method="POST" action={ templ.SafeURL("/v1/login") }>
 						<h2 class="card-title mb-4">Login</h2>
-						<input type="email" name="username" placeholder="Email" class="input input-bordered w-full"/>
+						<input type="text" name="username" placeholder="Username" class="input input-bordered w-full"/>
 						<input type="password" name="password" placeholder="Password" class="input input-bordered w-full"/>
 						<input type="submit" class="btn btn-primary mt-8 w-75" value="Login"/>
 					</form>

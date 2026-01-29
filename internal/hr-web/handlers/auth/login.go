@@ -1,26 +1,54 @@
 package auth
 
 import (
-	"log"
+	"bytes"
+	"encoding/json"
+	"net/http"
+	"time"
 	"web-boilerplate/internal/hr-web/config"
-	"web-boilerplate/internal/hr-web/ui/pages"
 
+	"github.com/gofiber/fiber/v2/log"
 	"github.com/gofiber/fiber/v3"
-	"github.com/gofiber/fiber/v3/client"
 )
 
-func LoginHandler(c fiber.Ctx) error { // TODO: change this according to library spec
-	return pages.Login(config.API_URL).Render(c, c.Response().BodyWriter())
-}
+// Login handles the POST authentication request
+func Login(c fiber.Ctx) error {
+	username := c.FormValue("username")
+	password := c.FormValue("password")
 
-func Login(username, password string) (any, error) {
-	cc := client.New()
-	log.Printf("requesting login: %s", config.API_URL+"/v1/login")
-	resp, err := cc.Get(config.API_URL + "/v1/login")
-	if err != nil {
-		return nil, err
+	payload := map[string]string{
+		"username": username,
+		"password": password,
 	}
-	log.Printf("Login response: %s", string(resp.Body()))
+	jsonPayload, err := json.Marshal(payload)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
+	}
 
-	return string(resp.Body()), nil
+	resp, err := http.Post(config.API_URL+"/v1/login", "application/json", bytes.NewBuffer(jsonPayload))
+	if err != nil {
+		log.Errorf("error requesting backend with url: %s, err:%w", config.API_URL+"/v1/login", err)
+		return c.Status(fiber.StatusServiceUnavailable).SendString("Backend Service Unavailable")
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return c.Status(fiber.StatusUnauthorized).SendString("Invalid Credentials")
+	}
+
+	var result map[string]interface{}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString("Failed to parse response")
+	}
+
+	// Set token as cookie
+	if token, ok := result["token"].(string); ok {
+		cookie := new(fiber.Cookie)
+		cookie.Name = "auth_token"
+		cookie.Value = token
+		cookie.Expires = time.Now().Add(24 * time.Hour)
+		c.Cookie(cookie)
+	}
+
+	return c.Redirect().To("/home")
 }

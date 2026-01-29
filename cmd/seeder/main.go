@@ -8,6 +8,7 @@ import (
 	"web-boilerplate/internal/hr-api/config"
 	"web-boilerplate/internal/hr-api/db"
 	"web-boilerplate/internal/hr-api/repositories"
+	"web-boilerplate/shared/helpers"
 
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/google/uuid"
@@ -36,18 +37,21 @@ func main() {
 
 	// Seed Users
 	fmt.Println("Seeding 20 users...")
-	for i := 0; i < 20; i++ {
+	for i := range 20 {
 		id := uuid.New()
 		var pgID pgtype.UUID
 		pgID.Bytes = id
 		pgID.Valid = true
-
-		_, err := queries.CreateUser(ctx, repositories.CreateUserParams{
+		pass, err := helpers.HashPass(gofakeit.Password(true, true, true, true, false, 12))
+		if err != nil {
+			log.Fatalf("failed to hash password: %v", err)
+		}
+		_, err = queries.CreateUser(ctx, repositories.CreateUserParams{
 			ID:       pgID,
 			Name:     gofakeit.Name(),
 			Email:    gofakeit.Email(),
 			Username: gofakeit.Username(),
-			Password: gofakeit.Password(true, true, true, true, false, 12),
+			Password: pass,
 		})
 		if err != nil {
 			log.Printf("failed to create user %d: %v", i, err)
