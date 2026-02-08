@@ -12,11 +12,13 @@ func LoadAllConfig() error {
 	// Load env file
 	err := LoadEnvFile()
 	if err != nil {
+		fmt.Printf("Failed to load .env file, err: %v", err)
 		return err
 	}
 
 	LOG_LEVEL, err = determineLogLevel(os.Getenv("LOG_LEVEL"))
 	if err != nil {
+		fmt.Printf("Failed to determine log level, err: %v", err)
 		return err
 	}
 

@@ -14,18 +14,18 @@ import (
 )
 
 func main() {
-
-	err := config.LoadEnvFile()
+	err := config.LoadAllConfig()
 	if err != nil {
-		panic(err)
-	}
-	err = config.LoadAllConfig()
-	if err != nil {
+		fmt.Printf("Failed to load configs from environment, err: %v", err)
 		panic(err)
 	}
 
 	// Initialize Dependencies
-	logInst := loggerpkg.New(os.Getenv("LOG_LEVEL"))
+	logLvl := os.Getenv("LOG_LEVEL")
+	if logLvl == "" {
+		logLvl = "info"
+	}
+	logInst := loggerpkg.New(logLvl)
 
 	dbInst, err := db.New(context.Background(), os.Getenv("DATABASE_URL"))
 	if err != nil {
@@ -50,6 +50,9 @@ func main() {
 	// Setup routes
 	routes.SetupRoutes(app, logInst, dbInst)
 
+	if config.BASE_URL == "" {
+		config.BASE_URL = "localhost:3000"
+	}
 	fmt.Printf("baseurl:%s\n", config.BASE_URL)
 	//Start Server
 	err = app.Listen(config.BASE_URL)
