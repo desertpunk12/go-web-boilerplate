@@ -4,37 +4,35 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"net/http/httptest"
 	"testing"
 	"time"
+	"web-boilerplate/internal/hr-api/interfaces"
 	"web-boilerplate/internal/hr-api/repositories"
 	"web-boilerplate/shared/helpers"
 
 	"github.com/gofiber/fiber/v3"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestLogin_Success(t *testing.T) {
-	// 1. Setup Mock
 	hashedPassword, _ := helpers.HashPass("password123")
-	mockRepo := &MockQuerier{
-		GetUserByUsernameFunc: func(ctx context.Context, username string) (repositories.User, error) {
-			return repositories.User{
-				ID:       pgtype.UUID{Bytes: [16]byte{1, 2, 3, 4}, Valid: true},
-				Username: "testuser",
-				Password: hashedPassword,
-			}, nil
-		},
-	}
-	mockLogger := &MockLogger{}
+	mockRepo := repositories.NewMockQuerier(t)
+	mockRepo.EXPECT().GetUserByUsername(context.Background(), "testuser").Return(repositories.User{
+		ID:       pgtype.UUID{Bytes: [16]byte{1, 2, 3, 4}, Valid: true},
+		Username: "testuser",
+		Password: hashedPassword,
+	}, nil)
 
-	// 2. Initialize Handler
+	mockLogger := interfaces.NewMockLogger(t)
+	mockLogger.EXPECT().Info("login successful", []interface{}{"username", "testuser", "id", uuid.UUID{1, 2, 3, 4}.String()})
+
 	h := &Handler{
 		Log:  mockLogger,
 		Repo: mockRepo,
-		Pool: &MockPool{},
 	}
 
 	// 3. Setup Fiber app
@@ -69,9 +67,11 @@ func TestLogin_Success(t *testing.T) {
 }
 
 func TestLogin_InvalidBody(t *testing.T) {
+	mockLogger := interfaces.NewMockLogger(t)
+	mockLogger.EXPECT().Error(mock.AnythingOfType("*json.SyntaxError"), "failed to bind body")
+
 	h := &Handler{
-		Log:  &MockLogger{},
-		Repo: &MockQuerier{},
+		Log: mockLogger,
 	}
 	app := fiber.New()
 	app.Post("/login", h.Login)
@@ -91,13 +91,14 @@ func TestLogin_InvalidBody(t *testing.T) {
 }
 
 func TestLogin_UserNotFound(t *testing.T) {
-	mockRepo := &MockQuerier{
-		GetUserByUsernameFunc: func(ctx context.Context, username string) (repositories.User, error) {
-			return repositories.User{}, errors.New("user not found")
-		},
-	}
+	mockRepo := repositories.NewMockQuerier(t)
+	mockRepo.EXPECT().GetUserByUsername(context.Background(), "unknown").Return(repositories.User{}, assert.AnError)
+
+	mockLogger := interfaces.NewMockLogger(t)
+	mockLogger.EXPECT().Error(assert.AnError, "user not found or db error")
+
 	h := &Handler{
-		Log:  &MockLogger{},
+		Log:  mockLogger,
 		Repo: mockRepo,
 	}
 	app := fiber.New()
@@ -124,17 +125,18 @@ func TestLogin_UserNotFound(t *testing.T) {
 
 func TestLogin_InvalidPassword(t *testing.T) {
 	hashedPassword, _ := helpers.HashPass("correct-password")
-	mockRepo := &MockQuerier{
-		GetUserByUsernameFunc: func(ctx context.Context, username string) (repositories.User, error) {
-			return repositories.User{
-				ID:       pgtype.UUID{Bytes: [16]byte{1, 2, 3, 4}, Valid: true},
-				Username: "testuser",
-				Password: hashedPassword,
-			}, nil
-		},
-	}
+	mockRepo := repositories.NewMockQuerier(t)
+	mockRepo.EXPECT().GetUserByUsername(context.Background(), "testuser").Return(repositories.User{
+		ID:       pgtype.UUID{Bytes: [16]byte{1, 2, 3, 4}, Valid: true},
+		Username: "testuser",
+		Password: hashedPassword,
+	}, nil)
+
+	mockLogger := interfaces.NewMockLogger(t)
+	mockLogger.EXPECT().Info("invalid password attempt")
+
 	h := &Handler{
-		Log:  &MockLogger{},
+		Log:  mockLogger,
 		Repo: mockRepo,
 	}
 	app := fiber.New()
@@ -160,13 +162,14 @@ func TestLogin_InvalidPassword(t *testing.T) {
 }
 
 func TestLogin_DBError(t *testing.T) {
-	mockRepo := &MockQuerier{
-		GetUserByUsernameFunc: func(ctx context.Context, username string) (repositories.User, error) {
-			return repositories.User{}, errors.New("db connection error")
-		},
-	}
+	mockRepo := repositories.NewMockQuerier(t)
+	mockRepo.EXPECT().GetUserByUsername(context.Background(), "testuser").Return(repositories.User{}, assert.AnError)
+
+	mockLogger := interfaces.NewMockLogger(t)
+	mockLogger.EXPECT().Error(assert.AnError, "user not found or db error")
+
 	h := &Handler{
-		Log:  &MockLogger{},
+		Log:  mockLogger,
 		Repo: mockRepo,
 	}
 	app := fiber.New()

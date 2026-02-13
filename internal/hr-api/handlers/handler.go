@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"context"
 	"web-boilerplate/internal/hr-api/db"
 	"web-boilerplate/internal/hr-api/interfaces"
 	"web-boilerplate/internal/hr-api/pkg/logger"
@@ -10,14 +9,10 @@ import (
 	"github.com/rs/zerolog"
 )
 
-type DBPool interface {
-	Ping(ctx context.Context) error
-}
-
 type Handler struct {
 	Log  interfaces.Logger
 	Repo repositories.Querier
-	Pool DBPool
+	Pool interfaces.DBPool
 }
 
 func New(log *zerolog.Logger, dbInst *db.Database) *Handler {

@@ -2,24 +2,26 @@ package handlers
 
 import (
 	"context"
-	"errors"
 	"net/http/httptest"
 	"testing"
 
+	"web-boilerplate/internal/hr-api/interfaces"
+
 	"github.com/gofiber/fiber/v3"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestHealth_Success(t *testing.T) {
-	mockPool := &MockPool{
-		PingFunc: func(ctx context.Context) error {
-			return nil
-		},
-	}
-	h := &Handler{
-		Log:  &MockLogger{},
+	mockPool := interfaces.NewMockDBPool(t)
+	mockPool.EXPECT().Ping(context.Background()).Return(nil)
+
+	mockLogger := interfaces.NewMockLogger(t)
+	mockLogger.EXPECT().Info("health check passed", mock.Anything)
+
+	h := Handler{
 		Pool: mockPool,
-		Repo: &MockQuerier{},
+		Log:  mockLogger,
 	}
 
 	app := fiber.New()
@@ -32,15 +34,15 @@ func TestHealth_Success(t *testing.T) {
 }
 
 func TestHealth_DBFailure(t *testing.T) {
-	mockPool := &MockPool{
-		PingFunc: func(ctx context.Context) error {
-			return errors.New("db down")
-		},
-	}
-	h := &Handler{
-		Log:  &MockLogger{},
+	mockPool := interfaces.NewMockDBPool(t)
+	mockPool.EXPECT().Ping(context.Background()).Return(assert.AnError)
+
+	mockLogger := interfaces.NewMockLogger(t)
+	mockLogger.EXPECT().Error(assert.AnError, "database ping failed")
+
+	h := Handler{
 		Pool: mockPool,
-		Repo: &MockQuerier{},
+		Log:  mockLogger,
 	}
 
 	app := fiber.New()

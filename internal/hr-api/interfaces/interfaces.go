@@ -7,11 +7,10 @@ type Logger interface {
 	Error(err error, msg string)
 }
 
-type DB interface {
-	Ping() error
-	// Add other methods as needed here
+type RedisDB interface {
+	Ping(ctx context.Context) error
 }
 
-type RedisDB interface {
+type DBPool interface {
 	Ping(ctx context.Context) error
 }
