@@ -1,19 +1,23 @@
 package handlers
 
 import (
+	"context"
 	"web-boilerplate/internal/hr-api/db"
 	"web-boilerplate/internal/hr-api/interfaces"
 	"web-boilerplate/internal/hr-api/pkg/logger"
 	"web-boilerplate/internal/hr-api/repositories"
 
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rs/zerolog"
 )
 
+type DBPool interface {
+	Ping(ctx context.Context) error
+}
+
 type Handler struct {
 	Log  interfaces.Logger
-	Repo *repositories.Queries
-	Pool *pgxpool.Pool
+	Repo repositories.Querier
+	Pool DBPool
 }
 
 func New(log *zerolog.Logger, dbInst *db.Database) *Handler {
