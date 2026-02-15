@@ -43,7 +43,9 @@ func main() {
 		})
 	}
 
-	// Setup middlewares
+	// Setup middlewares (order matters - recover should be first)
+	logAdapter := loggerpkg.NewZerologAdapter(logInst)
+	middlewares.SetupMiddlewareRecover(app, logAdapter)
 	middlewares.SetupLogger(app, logInst)
 	middlewares.SetupMiddlewares(app)
 

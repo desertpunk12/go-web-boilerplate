@@ -182,18 +182,18 @@ func TestLogin_Success(t *testing.T) {
 ## Known Issues and Improvements
 
 ### 🔴 Critical Security Issues (Fix Immediately)
-1. **Hardcoded JWT secret**: `middlewares/auth.go:27` contains `"your-secret-key"` - must use `config.SECRET_KEY`
-2. **Weak default secret**: `config/globalvars.go` has default `SECRET_KEY = "qweasd123"` - reject in production
-3. **CORS wildcard**: `ALLOWED_ORIGINS` defaults to empty which allows `"*"` - require explicit config in production
+1. ~~**Hardcoded JWT secret**: `middlewares/auth.go:27` contains `"your-secret-key"` - must use `config.SECRET_KEY`~~ ✅ RESOLVED
+2. ~~**Weak default secret**: `config/globalvars.go` has default `SECRET_KEY = "qweasd123"` - reject in production~~ ⚠️ NOT APPLICABLE (per user)
+3. ~~**CORS wildcard**: `ALLOWED_ORIGINS` defaults to empty which allows `"*"` - require explicit config in production~~ ✅ RESOLVED (config.go:42-47)
 4. **No rate limiting**: Exposes API to brute force attacks
 5. **No input sanitization**: Vulnerable to XSS attacks
 6. **No CSRF protection**: Web forms vulnerable
 
 ### 🟠 High Priority Fixes
-1. **Mixed Fiber versions**: hr-web uses `fiber/v2`, hr-api uses `fiber/v3.0.0-rc.3` - standardize on one version
-2. **Invalid Go version**: `go.mod` specifies `1.25.5` which doesn't exist - update to `1.23` or `1.24`
-3. **Protected middleware unused**: Exists in code but never attached to routes
-4. **No panic recovery middleware**: Server crashes on unhandled panics
+1. ~~**Mixed Fiber versions**: hr-web uses `fiber/v2`, hr-api uses `fiber/v3.0.0-rc.3` - standardize on one version~~ ✅ RESOLVED (both use v3)
+2. ~~**Invalid Go version**: `go.mod` specifies `1.25.5` which doesn't exist - update to `1.23` or `1.24`~~ ✅ RESOLVED (currently uses 1.26.0)
+3. ~~**Protected middleware unused**: Exists in code but never attached to routes~~ ✅ RESOLVED (attached to /me route)
+4. ~~**No panic recovery middleware**: Server crashes on unhandled panics~~ ✅ RESOLVED
 5. **No request ID middleware**: Makes debugging distributed requests difficult
 6. **No migration tool**: Only raw SQL files - add goose or migrate
 7. **Redis unused**: Connected but not used for caching or sessions
