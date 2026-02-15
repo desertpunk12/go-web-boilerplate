@@ -5,6 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/golang-jwt/jwt/v5"
+	"web-boilerplate/internal/hr-api/config"
 )
 
 func Protected(c fiber.Ctx) error {
@@ -16,15 +17,14 @@ func Protected(c fiber.Ctx) error {
 	}
 
 	// Parse the token
-	token, err := jwt.Parse(auth, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.Parse(auth, func(token *jwt.Token) (any, error) {
 		// Validate the signing method
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 
 		// Provide the secret key used for signing
-		// Note: In production, this should be securely stored and retrieved
-		return []byte("your-secret-key"), nil
+		return []byte(config.SECRET_KEY), nil
 	})
 
 	if err != nil {
