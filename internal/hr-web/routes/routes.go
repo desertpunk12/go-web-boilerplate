@@ -7,14 +7,16 @@ import (
 	gpages "web-boilerplate/ui/pages"
 
 	"github.com/gofiber/fiber/v3"
+	"github.com/rs/zerolog"
 )
 
-func SetupRoutes(app *fiber.App) {
+func SetupRoutes(app *fiber.App, log *zerolog.Logger) {
 	app.Get("/", func(c fiber.Ctx) error {
 		c.RequestCtx().SetContentType("text/html")
 		return pages.Login(config.BASE_URL).Render(c, c.Response().BodyWriter())
 	})
 
+	auth.InitLogger(log)
 	app.Post("/v1/login", auth.Login)
 
 	app.Get("/home", func(c fiber.Ctx) error {

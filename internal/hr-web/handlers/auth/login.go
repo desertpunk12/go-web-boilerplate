@@ -7,9 +7,15 @@ import (
 	"time"
 	"web-boilerplate/internal/hr-web/config"
 
-	"github.com/gofiber/fiber/v2/log"
 	"github.com/gofiber/fiber/v3"
+	"github.com/rs/zerolog"
 )
+
+var log *zerolog.Logger
+
+func InitLogger(logger *zerolog.Logger) {
+	log = logger
+}
 
 // Login handles the POST authentication request
 func Login(c fiber.Ctx) error {
@@ -27,7 +33,7 @@ func Login(c fiber.Ctx) error {
 
 	resp, err := http.Post(config.API_URL+"/v1/login", "application/json", bytes.NewBuffer(jsonPayload))
 	if err != nil {
-		log.Errorf("error requesting backend with url: %s, err:%w", config.API_URL+"/v1/login", err)
+		log.Error().Err(err).Str("url", config.API_URL+"/v1/login").Msg("error requesting backend")
 		return c.Status(fiber.StatusServiceUnavailable).SendString("Backend Service Unavailable")
 	}
 	defer resp.Body.Close()
@@ -36,7 +42,7 @@ func Login(c fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).SendString("Invalid Credentials")
 	}
 
-	var result map[string]interface{}
+	var result map[string]any
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString("Failed to parse response")
 	}

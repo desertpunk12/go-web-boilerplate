@@ -38,6 +38,10 @@ func LoadAllConfig() error {
 	}
 
 	ALLOWED_ORIGINS = os.Getenv("ALLOWED_ORIGINS")
+	// In production, require explicit ALLOWED_ORIGINS to be set
+	if IS_PROD && len(ALLOWED_ORIGINS) == 0 {
+		return fmt.Errorf("ALLOWED_ORIGINS must be set in production environment")
+	}
 	if len(ALLOWED_ORIGINS) == 0 {
 		ALLOWED_ORIGINS = "*"
 	}

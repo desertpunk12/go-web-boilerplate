@@ -9,6 +9,7 @@ import (
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/static"
+	"github.com/rs/zerolog"
 )
 
 func main() {
@@ -22,6 +23,13 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	// Setup logger
+	logLevel := os.Getenv("LOG_LEVEL")
+	if logLevel == "" {
+		logLevel = "info"
+	}
+	logInst := zerolog.New(os.Stderr).With().Timestamp().Logger()
 
 	// Disable cache control middleware in development and add dynamic route for style
 	if !config.IS_PROD {
@@ -59,7 +67,7 @@ func main() {
 		Browse: true,
 	}))
 
-	routes.SetupRoutes(app)
+	routes.SetupRoutes(app, &logInst)
 
 	fmt.Printf("baseurl:%s\n", config.BASE_URL)
 	fmt.Printf("apiurl:%s\n", config.API_URL)
