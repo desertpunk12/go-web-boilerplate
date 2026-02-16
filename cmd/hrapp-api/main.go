@@ -43,9 +43,14 @@ func main() {
 		})
 	}
 
-	// Setup middlewares (order matters - recover should be first)
+	// Setup middlewares (order matters):
+	// 1. Recover - catches panics
+	// 2. Request ID - generates/propagates ID before logger
+	// 3. Logger - includes request ID in logs via FieldRequestId
+	// 4. Other middlewares
 	logAdapter := loggerpkg.NewZerologAdapter(logInst)
 	middlewares.SetupMiddlewareRecover(app, logAdapter)
+	middlewares.SetupMiddlewareRequestID(app)
 	middlewares.SetupLogger(app, logInst)
 	middlewares.SetupMiddlewares(app)
 

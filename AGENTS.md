@@ -194,8 +194,8 @@ func TestLogin_Success(t *testing.T) {
 2. ~~**Invalid Go version**: `go.mod` specifies `1.25.5` which doesn't exist - update to `1.23` or `1.24`~~ ✅ RESOLVED (currently uses 1.26.0)
 3. ~~**Protected middleware unused**: Exists in code but never attached to routes~~ ✅ RESOLVED (attached to /me route)
 4. ~~**No panic recovery middleware**: Server crashes on unhandled panics~~ ✅ RESOLVED
-5. **No request ID middleware**: Makes debugging distributed requests difficult
-6. **No migration tool**: Only raw SQL files - add goose or migrate
+5. ~~**No request ID middleware**: Makes debugging distributed requests difficult~~ ✅ RESOLVED
+6. ~~**No migration tool**: Only raw SQL files - add goose or migrate~~ ✅ RESOLVED (migrate tool integrated with Makefile targets)
 7. **Redis unused**: Connected but not used for caching or sessions
 8. **No transaction examples**: Show how to use pgx transactions
 9. **No standardized response format**: Each handler returns different structure

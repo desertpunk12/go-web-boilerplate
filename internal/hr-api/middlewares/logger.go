@@ -20,6 +20,7 @@ func SetupLogger(app *fiber.App, log *zerolog.Logger) {
 			fiberzerolog.FieldMethod,
 			fiberzerolog.FieldURL,
 			fiberzerolog.FieldError,
+			fiberzerolog.FieldRequestID,
 		},
 	}))
 }
