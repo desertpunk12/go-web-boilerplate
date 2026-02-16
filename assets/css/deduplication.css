@@ -1,0 +1,46 @@
+/* Request deduplication styles */
+
+/* Alert containers */
+.alert {
+  @apply padding-4 rounded-lg shadow-md;
+  transition: all 0.3s ease;
+}
+
+.alert-error {
+  @apply alert bg-error/10 text-error border-error/50;
+}
+
+.alert-success {
+  @apply alert bg-success/10 text-success border-success/50;
+}
+
+/* Loading states */
+.loading-spinner {
+  @apply inline-block w-6 h-6 border-4 border-current rounded-full border-t-transparent;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Form states */
+input:disabled,
+button:disabled {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+/* Utility classes */
+.hidden {
+  display: none !important;
+}
+
+/* Loading overlay */
+.loading {
+  @apply flex items-center gap-2;
+}
+
+.loading .text-sm {
+  @apply text-sm text-neutral;
+}

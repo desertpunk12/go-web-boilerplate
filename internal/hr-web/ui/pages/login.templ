@@ -7,14 +7,93 @@ templ Login(base string) {
 		<div class="flex justify-center items-center h-screen p-4">
 			<div class="card card-xl shadow-xl w-full max-w-96 gap-4 bg-neutral">
 				<div class="card-body items-center text-center">
-					<form method="POST" action={ templ.SafeURL("/v1/login") }>
-						<h2 class="card-title mb-4">Login</h2>
+					<h2 class="card-title mb-4">Login</h2>
+					
+					<!-- Error message display -->
+					<div id="login-error" class="hidden alert alert-error mb-4 text-sm"></div>
+					
+					<!-- Success message display -->
+					<div id="login-success" class="hidden alert alert-success mb-4 text-sm"></div>
+					
+					<!-- Loading indicator -->
+					<div id="login-loading" class="hidden mb-4">
+						<span class="loading loading-spinner"></span>
+						<span class="text-sm">Processing your request...</span>
+					</div>
+					
+					<form id="login-form" method="POST" action={ templ.SafeURL("/v1/login") }>
 						<input type="text" name="username" placeholder="Username" class="input input-bordered w-full"/>
 						<input type="password" name="password" placeholder="Password" class="input input-bordered w-full"/>
-						<input type="submit" class="btn btn-primary mt-8 w-75" value="Login"/>
+						<input type="submit" id="submit-btn" class="btn btn-primary mt-8 w-75" value="Login"/>
 					</form>
 				</div>
 			</div>
 		</div>
+		
+		<script>
+		// Initialize request deduplication on page load
+		const dedup = new RequestDeduplication();
+		dedup.initCleanup();
+		
+		// Generate a unique ID for this login form
+		const loginRequestId = dedup.generateId();
+		const loginForm = document.getElementById('login-form');
+		
+		// Store as ID so we can use it if needed (e.g., for form resubmission)
+		sessionStorage.setItem('loginRequestId', loginRequestId);
+		
+		loginForm.addEventListener('submit', async function(e) {
+			e.preventDefault();
+			
+			// Clear previous messages
+			const errorDiv = document.getElementById('login-error');
+			const successDiv = document.getElementById('login-success');
+			const loadingDiv = document.getElementById('login-loading');
+			
+			errorDiv.classList.add('hidden');
+			successDiv.classList.add('hidden');
+			loadingDiv.classList.remove('hidden');
+			
+			const formData = new FormData(loginForm);
+			
+			try {
+				await dedup.submitForm('/v1/login', formData, {
+					requestId: loginRequestId,  // Use as same ID consistently
+					formId: 'login-form',
+					submitButtonId: 'submit-btn',
+					loadingMessage: 'Logging in...',
+					onSuccess: function(data) {
+						// Store token in cookie and redirect
+						if (data.token) {
+							document.cookie = `auth_token=${data.token}; path=/; max-age=86400`;
+							window.location.href = '/home';
+						} else {
+							errorDiv.textContent = 'Login failed: No token received';
+							errorDiv.classList.remove('hidden');
+							loadingDiv.classList.add('hidden');
+						}
+					},
+					onConflict: function(message) {
+						// Handle duplicate request (409 Conflict)
+						errorDiv.textContent = message || 'This login request is already being processed';
+						errorDiv.classList.remove('hidden');
+						loadingDiv.classList.add('hidden');
+					},
+					onError: function(error) {
+						// Handle network errors
+						errorDiv.textContent = error.message || 'An error occurred. Please try again.';
+						errorDiv.classList.remove('hidden');
+						loadingDiv.classList.add('hidden');
+					}
+				});
+				
+			} catch (error) {
+				errorDiv.textContent = error.message || 'An unexpected error occurred';
+				errorDiv.classList.remove('hidden');
+				loadingDiv.classList.add('hidden');
+			}
+		});
+		</script>
 	}
 }
+
