@@ -1,0 +1,44 @@
+//Create a web framework or an adapter for gofiber with generators that generate a route from a query
+//Create a generator tool that generates the route also generates the whole project if required directory structure is not found
+//(maybe use sqlc to generate models nd just improve it to make a fully fledge route)
+//Create a generator tool that generates the whole project structure
+
+
+API
+//DONE: Create route for login
+//DONE: Create route for getting currently logged in user /me
+//SCRATCH: add recover middleware
+//DONE: add logging middleware
+//SCRATCH: format logging
+//SCRATCH: add health check route checking db and other services
+
+
+
+WEB
+//SCRATCH: Create frontend for login
+//SCRATCH: Create basic home page for after login displaying user logged in
+//SCRATCH: Copy necessary middlewares from api
+//SCRATCH: Create a customized 404 page
+
+
+
+
+
+All
+//SCRATCH: decide how to approach validation for requests, maybe use go-validation
+//SCRATCH: Integrate Google Auth
+//SCRATCH: Integrate Github Auth
+//SCRATCH: Integrate Facebook Auth
+
+
+//SCRATCH: Make a sample for testing
+
+
+
+// Goal speed run simple crud tables with search applications
+// by creating a generator for front-end and back-end
+
+
+//Million SCRATCHs
+//Million stopwatches
+//Million random polls
