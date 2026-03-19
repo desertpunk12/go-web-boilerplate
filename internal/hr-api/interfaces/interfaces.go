@@ -3,7 +3,7 @@ package interfaces
 import "context"
 
 type Logger interface {
-	Info(msg string, keys ...interface{})
+	Info(msg string, keys ...any)
 	Error(err error, msg string)
 }
 

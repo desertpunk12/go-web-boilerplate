@@ -79,7 +79,7 @@ if err != nil {
 
 ### Logging
 - Use the `Logger` interface defined in interfaces.go, not zerolog directly in handlers
-- Methods: `Log.Info(msg string, keys ...interface{})` and `Log.Error(err error, msg string)`
+- Methods: `Log.Info(msg string, keys ...any)` and `Log.Error(err error, msg string)`
 - Use structured logging with key-value pairs
 - Example: `h.Log.Info("login successful", "username", user.Username, "id", userID)`
 

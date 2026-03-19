@@ -51,7 +51,7 @@ type MockLogger_Error_Call struct {
 // Error is a helper method to define mock.On call
 //   - err error
 //   - msg string
-func (_e *MockLogger_Expecter) Error(err interface{}, msg interface{}) *MockLogger_Error_Call {
+func (_e *MockLogger_Expecter) Error(err any, msg any) *MockLogger_Error_Call {
 	return &MockLogger_Error_Call{Call: _e.mock.On("Error", err, msg)}
 }
 
@@ -84,7 +84,7 @@ func (_c *MockLogger_Error_Call) RunAndReturn(run func(err error, msg string)) *
 }
 
 // Info provides a mock function for the type MockLogger
-func (_mock *MockLogger) Info(msg string, keys ...interface{}) {
+func (_mock *MockLogger) Info(msg string, keys ...any) {
 	if len(keys) > 0 {
 		_mock.Called(msg, keys)
 	} else {
@@ -101,22 +101,22 @@ type MockLogger_Info_Call struct {
 
 // Info is a helper method to define mock.On call
 //   - msg string
-//   - keys ...interface{}
-func (_e *MockLogger_Expecter) Info(msg interface{}, keys ...interface{}) *MockLogger_Info_Call {
+//   - keys ...any
+func (_e *MockLogger_Expecter) Info(msg any, keys ...any) *MockLogger_Info_Call {
 	return &MockLogger_Info_Call{Call: _e.mock.On("Info",
-		append([]interface{}{msg}, keys...)...)}
+		append([]any{msg}, keys...)...)}
 }
 
-func (_c *MockLogger_Info_Call) Run(run func(msg string, keys ...interface{})) *MockLogger_Info_Call {
+func (_c *MockLogger_Info_Call) Run(run func(msg string, keys ...any)) *MockLogger_Info_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 string
 		if args[0] != nil {
 			arg0 = args[0].(string)
 		}
-		var arg1 []interface{}
-		var variadicArgs []interface{}
+		var arg1 []any
+		var variadicArgs []any
 		if len(args) > 1 {
-			variadicArgs = args[1].([]interface{})
+			variadicArgs = args[1].([]any)
 		}
 		arg1 = variadicArgs
 		run(
@@ -132,7 +132,7 @@ func (_c *MockLogger_Info_Call) Return() *MockLogger_Info_Call {
 	return _c
 }
 
-func (_c *MockLogger_Info_Call) RunAndReturn(run func(msg string, keys ...interface{})) *MockLogger_Info_Call {
+func (_c *MockLogger_Info_Call) RunAndReturn(run func(msg string, keys ...any)) *MockLogger_Info_Call {
 	_c.Run(run)
 	return _c
 }
@@ -188,7 +188,7 @@ type MockRedisDB_Ping_Call struct {
 
 // Ping is a helper method to define mock.On call
 //   - ctx context.Context
-func (_e *MockRedisDB_Expecter) Ping(ctx interface{}) *MockRedisDB_Ping_Call {
+func (_e *MockRedisDB_Expecter) Ping(ctx any) *MockRedisDB_Ping_Call {
 	return &MockRedisDB_Ping_Call{Call: _e.mock.On("Ping", ctx)}
 }
 
@@ -266,7 +266,7 @@ type MockDBPool_Ping_Call struct {
 
 // Ping is a helper method to define mock.On call
 //   - ctx context.Context
-func (_e *MockDBPool_Expecter) Ping(ctx interface{}) *MockDBPool_Ping_Call {
+func (_e *MockDBPool_Expecter) Ping(ctx any) *MockDBPool_Ping_Call {
 	return &MockDBPool_Ping_Call{Call: _e.mock.On("Ping", ctx)}
 }
 

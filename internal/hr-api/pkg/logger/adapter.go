@@ -14,7 +14,7 @@ func NewZerologAdapter(l *zerolog.Logger) interfaces.Logger {
 	return &ZerologAdapter{logger: l}
 }
 
-func (z *ZerologAdapter) Info(msg string, keys ...interface{}) {
+func (z *ZerologAdapter) Info(msg string, keys ...any) {
 	event := z.logger.Info()
 	if len(keys)%2 == 0 {
 		for i := 0; i < len(keys); i += 2 {

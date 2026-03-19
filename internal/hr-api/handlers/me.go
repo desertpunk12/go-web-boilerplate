@@ -10,7 +10,7 @@ import (
 
 func (h *Handler) GetMe(c fiber.Ctx) error {
 	// Get user claims from the protected middleware
-	claims, ok := c.Locals("user").(map[string]interface{})
+	claims, ok := c.Locals("user").(map[string]any)
 	if !ok {
 		h.Log.Error(nil, "failed to get user claims from context")
 		return fiber.ErrUnauthorized

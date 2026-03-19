@@ -38,7 +38,7 @@ func TestGetMe_Success(t *testing.T) {
 
 	// Middleware that sets up the user claims (simulating the auth middleware)
 	app.Use(func(c fiber.Ctx) error {
-		c.Locals("user", map[string]interface{}{
+		c.Locals("user", map[string]any{
 			"id":  userID.String(),
 			"exp": float64(9999999999), // far future
 		})
@@ -57,7 +57,7 @@ func TestGetMe_Success(t *testing.T) {
 
 	assert.Equal(t, 200, resp.StatusCode)
 
-	var respBody map[string]interface{}
+	var respBody map[string]any
 	json.NewDecoder(resp.Body).Decode(&respBody)
 	assert.Equal(t, "01020304-0000-0000-0000-000000000000", respBody["id"])
 	assert.Equal(t, "Test User", respBody["name"])
@@ -105,7 +105,7 @@ func TestGetMe_InvalidUserID(t *testing.T) {
 	app := fiber.New()
 
 	app.Use(func(c fiber.Ctx) error {
-		c.Locals("user", map[string]interface{}{
+		c.Locals("user", map[string]any{
 			"id":  "invalid-uuid",
 			"exp": float64(9999999999),
 		})
@@ -142,7 +142,7 @@ func TestGetMe_UserNotFound(t *testing.T) {
 	app := fiber.New()
 
 	app.Use(func(c fiber.Ctx) error {
-		c.Locals("user", map[string]interface{}{
+		c.Locals("user", map[string]any{
 			"id":  userID.String(),
 			"exp": float64(9999999999),
 		})
@@ -173,7 +173,7 @@ func TestGetMe_IDMissing(t *testing.T) {
 	app := fiber.New()
 
 	app.Use(func(c fiber.Ctx) error {
-		c.Locals("user", map[string]interface{}{
+		c.Locals("user", map[string]any{
 			"exp": float64(9999999999),
 		})
 		return c.Next()

@@ -28,7 +28,7 @@ func TestLogin_Success(t *testing.T) {
 	}, nil)
 
 	mockLogger := interfaces.NewMockLogger(t)
-	mockLogger.EXPECT().Info("login successful", []interface{}{"username", "testuser", "id", uuid.UUID{1, 2, 3, 4}.String()})
+	mockLogger.EXPECT().Info("login successful", []any{"username", "testuser", "id", uuid.UUID{1, 2, 3, 4}.String()})
 
 	h := &Handler{
 		Log:  mockLogger,
@@ -60,7 +60,7 @@ func TestLogin_Success(t *testing.T) {
 	// 6. Assertions
 	assert.Equal(t, 200, resp.StatusCode)
 
-	var respBody map[string]interface{}
+	var respBody map[string]any
 	json.NewDecoder(resp.Body).Decode(&respBody)
 	assert.NotEmpty(t, respBody["token"])
 	assert.Equal(t, "01020304-0000-0000-0000-000000000000", respBody["id"])

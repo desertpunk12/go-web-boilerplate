@@ -41,7 +41,7 @@ func (_m *MockDBTX) EXPECT() *MockDBTX_Expecter {
 }
 
 // Exec provides a mock function for the type MockDBTX
-func (_mock *MockDBTX) Exec(context1 context.Context, s string, ifaceVals ...interface{}) (pgconn.CommandTag, error) {
+func (_mock *MockDBTX) Exec(context1 context.Context, s string, ifaceVals ...any) (pgconn.CommandTag, error) {
 	var tmpRet mock.Arguments
 	if len(ifaceVals) > 0 {
 		tmpRet = _mock.Called(context1, s, ifaceVals)
@@ -56,15 +56,15 @@ func (_mock *MockDBTX) Exec(context1 context.Context, s string, ifaceVals ...int
 
 	var r0 pgconn.CommandTag
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string, ...interface{}) (pgconn.CommandTag, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, ...any) (pgconn.CommandTag, error)); ok {
 		return returnFunc(context1, s, ifaceVals...)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string, ...interface{}) pgconn.CommandTag); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, ...any) pgconn.CommandTag); ok {
 		r0 = returnFunc(context1, s, ifaceVals...)
 	} else {
 		r0 = ret.Get(0).(pgconn.CommandTag)
 	}
-	if returnFunc, ok := ret.Get(1).(func(context.Context, string, ...interface{}) error); ok {
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string, ...any) error); ok {
 		r1 = returnFunc(context1, s, ifaceVals...)
 	} else {
 		r1 = ret.Error(1)
@@ -80,13 +80,13 @@ type MockDBTX_Exec_Call struct {
 // Exec is a helper method to define mock.On call
 //   - context1 context.Context
 //   - s string
-//   - ifaceVals ...interface{}
-func (_e *MockDBTX_Expecter) Exec(context1 interface{}, s interface{}, ifaceVals ...interface{}) *MockDBTX_Exec_Call {
+//   - ifaceVals ...any
+func (_e *MockDBTX_Expecter) Exec(context1 any, s any, ifaceVals ...any) *MockDBTX_Exec_Call {
 	return &MockDBTX_Exec_Call{Call: _e.mock.On("Exec",
-		append([]interface{}{context1, s}, ifaceVals...)...)}
+		append([]any{context1, s}, ifaceVals...)...)}
 }
 
-func (_c *MockDBTX_Exec_Call) Run(run func(context1 context.Context, s string, ifaceVals ...interface{})) *MockDBTX_Exec_Call {
+func (_c *MockDBTX_Exec_Call) Run(run func(context1 context.Context, s string, ifaceVals ...any)) *MockDBTX_Exec_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -96,10 +96,10 @@ func (_c *MockDBTX_Exec_Call) Run(run func(context1 context.Context, s string, i
 		if args[1] != nil {
 			arg1 = args[1].(string)
 		}
-		var arg2 []interface{}
-		var variadicArgs []interface{}
+		var arg2 []any
+		var variadicArgs []any
 		if len(args) > 2 {
-			variadicArgs = args[2].([]interface{})
+			variadicArgs = args[2].([]any)
 		}
 		arg2 = variadicArgs
 		run(
@@ -116,13 +116,13 @@ func (_c *MockDBTX_Exec_Call) Return(commandTag pgconn.CommandTag, err error) *M
 	return _c
 }
 
-func (_c *MockDBTX_Exec_Call) RunAndReturn(run func(context1 context.Context, s string, ifaceVals ...interface{}) (pgconn.CommandTag, error)) *MockDBTX_Exec_Call {
+func (_c *MockDBTX_Exec_Call) RunAndReturn(run func(context1 context.Context, s string, ifaceVals ...any) (pgconn.CommandTag, error)) *MockDBTX_Exec_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // Query provides a mock function for the type MockDBTX
-func (_mock *MockDBTX) Query(context1 context.Context, s string, ifaceVals ...interface{}) (pgx.Rows, error) {
+func (_mock *MockDBTX) Query(context1 context.Context, s string, ifaceVals ...any) (pgx.Rows, error) {
 	var tmpRet mock.Arguments
 	if len(ifaceVals) > 0 {
 		tmpRet = _mock.Called(context1, s, ifaceVals)
@@ -137,17 +137,17 @@ func (_mock *MockDBTX) Query(context1 context.Context, s string, ifaceVals ...in
 
 	var r0 pgx.Rows
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string, ...interface{}) (pgx.Rows, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, ...any) (pgx.Rows, error)); ok {
 		return returnFunc(context1, s, ifaceVals...)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string, ...interface{}) pgx.Rows); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, ...any) pgx.Rows); ok {
 		r0 = returnFunc(context1, s, ifaceVals...)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(pgx.Rows)
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(context.Context, string, ...interface{}) error); ok {
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string, ...any) error); ok {
 		r1 = returnFunc(context1, s, ifaceVals...)
 	} else {
 		r1 = ret.Error(1)
@@ -163,13 +163,13 @@ type MockDBTX_Query_Call struct {
 // Query is a helper method to define mock.On call
 //   - context1 context.Context
 //   - s string
-//   - ifaceVals ...interface{}
-func (_e *MockDBTX_Expecter) Query(context1 interface{}, s interface{}, ifaceVals ...interface{}) *MockDBTX_Query_Call {
+//   - ifaceVals ...any
+func (_e *MockDBTX_Expecter) Query(context1 any, s any, ifaceVals ...any) *MockDBTX_Query_Call {
 	return &MockDBTX_Query_Call{Call: _e.mock.On("Query",
-		append([]interface{}{context1, s}, ifaceVals...)...)}
+		append([]any{context1, s}, ifaceVals...)...)}
 }
 
-func (_c *MockDBTX_Query_Call) Run(run func(context1 context.Context, s string, ifaceVals ...interface{})) *MockDBTX_Query_Call {
+func (_c *MockDBTX_Query_Call) Run(run func(context1 context.Context, s string, ifaceVals ...any)) *MockDBTX_Query_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -179,10 +179,10 @@ func (_c *MockDBTX_Query_Call) Run(run func(context1 context.Context, s string, 
 		if args[1] != nil {
 			arg1 = args[1].(string)
 		}
-		var arg2 []interface{}
-		var variadicArgs []interface{}
+		var arg2 []any
+		var variadicArgs []any
 		if len(args) > 2 {
-			variadicArgs = args[2].([]interface{})
+			variadicArgs = args[2].([]any)
 		}
 		arg2 = variadicArgs
 		run(
@@ -199,13 +199,13 @@ func (_c *MockDBTX_Query_Call) Return(rows pgx.Rows, err error) *MockDBTX_Query_
 	return _c
 }
 
-func (_c *MockDBTX_Query_Call) RunAndReturn(run func(context1 context.Context, s string, ifaceVals ...interface{}) (pgx.Rows, error)) *MockDBTX_Query_Call {
+func (_c *MockDBTX_Query_Call) RunAndReturn(run func(context1 context.Context, s string, ifaceVals ...any) (pgx.Rows, error)) *MockDBTX_Query_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // QueryRow provides a mock function for the type MockDBTX
-func (_mock *MockDBTX) QueryRow(context1 context.Context, s string, ifaceVals ...interface{}) pgx.Row {
+func (_mock *MockDBTX) QueryRow(context1 context.Context, s string, ifaceVals ...any) pgx.Row {
 	var tmpRet mock.Arguments
 	if len(ifaceVals) > 0 {
 		tmpRet = _mock.Called(context1, s, ifaceVals)
@@ -219,7 +219,7 @@ func (_mock *MockDBTX) QueryRow(context1 context.Context, s string, ifaceVals ..
 	}
 
 	var r0 pgx.Row
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string, ...interface{}) pgx.Row); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, ...any) pgx.Row); ok {
 		r0 = returnFunc(context1, s, ifaceVals...)
 	} else {
 		if ret.Get(0) != nil {
@@ -237,13 +237,13 @@ type MockDBTX_QueryRow_Call struct {
 // QueryRow is a helper method to define mock.On call
 //   - context1 context.Context
 //   - s string
-//   - ifaceVals ...interface{}
-func (_e *MockDBTX_Expecter) QueryRow(context1 interface{}, s interface{}, ifaceVals ...interface{}) *MockDBTX_QueryRow_Call {
+//   - ifaceVals ...any
+func (_e *MockDBTX_Expecter) QueryRow(context1 any, s any, ifaceVals ...any) *MockDBTX_QueryRow_Call {
 	return &MockDBTX_QueryRow_Call{Call: _e.mock.On("QueryRow",
-		append([]interface{}{context1, s}, ifaceVals...)...)}
+		append([]any{context1, s}, ifaceVals...)...)}
 }
 
-func (_c *MockDBTX_QueryRow_Call) Run(run func(context1 context.Context, s string, ifaceVals ...interface{})) *MockDBTX_QueryRow_Call {
+func (_c *MockDBTX_QueryRow_Call) Run(run func(context1 context.Context, s string, ifaceVals ...any)) *MockDBTX_QueryRow_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -253,10 +253,10 @@ func (_c *MockDBTX_QueryRow_Call) Run(run func(context1 context.Context, s strin
 		if args[1] != nil {
 			arg1 = args[1].(string)
 		}
-		var arg2 []interface{}
-		var variadicArgs []interface{}
+		var arg2 []any
+		var variadicArgs []any
 		if len(args) > 2 {
-			variadicArgs = args[2].([]interface{})
+			variadicArgs = args[2].([]any)
 		}
 		arg2 = variadicArgs
 		run(
@@ -273,7 +273,7 @@ func (_c *MockDBTX_QueryRow_Call) Return(row pgx.Row) *MockDBTX_QueryRow_Call {
 	return _c
 }
 
-func (_c *MockDBTX_QueryRow_Call) RunAndReturn(run func(context1 context.Context, s string, ifaceVals ...interface{}) pgx.Row) *MockDBTX_QueryRow_Call {
+func (_c *MockDBTX_QueryRow_Call) RunAndReturn(run func(context1 context.Context, s string, ifaceVals ...any) pgx.Row) *MockDBTX_QueryRow_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -339,7 +339,7 @@ type MockQuerier_CreateEmployee_Call struct {
 // CreateEmployee is a helper method to define mock.On call
 //   - ctx context.Context
 //   - arg CreateEmployeeParams
-func (_e *MockQuerier_Expecter) CreateEmployee(ctx interface{}, arg interface{}) *MockQuerier_CreateEmployee_Call {
+func (_e *MockQuerier_Expecter) CreateEmployee(ctx any, arg any) *MockQuerier_CreateEmployee_Call {
 	return &MockQuerier_CreateEmployee_Call{Call: _e.mock.On("CreateEmployee", ctx, arg)}
 }
 
@@ -405,7 +405,7 @@ type MockQuerier_CreateUser_Call struct {
 // CreateUser is a helper method to define mock.On call
 //   - ctx context.Context
 //   - arg CreateUserParams
-func (_e *MockQuerier_Expecter) CreateUser(ctx interface{}, arg interface{}) *MockQuerier_CreateUser_Call {
+func (_e *MockQuerier_Expecter) CreateUser(ctx any, arg any) *MockQuerier_CreateUser_Call {
 	return &MockQuerier_CreateUser_Call{Call: _e.mock.On("CreateUser", ctx, arg)}
 }
 
@@ -462,7 +462,7 @@ type MockQuerier_DeleteEmployee_Call struct {
 // DeleteEmployee is a helper method to define mock.On call
 //   - ctx context.Context
 //   - id pgtype.UUID
-func (_e *MockQuerier_Expecter) DeleteEmployee(ctx interface{}, id interface{}) *MockQuerier_DeleteEmployee_Call {
+func (_e *MockQuerier_Expecter) DeleteEmployee(ctx any, id any) *MockQuerier_DeleteEmployee_Call {
 	return &MockQuerier_DeleteEmployee_Call{Call: _e.mock.On("DeleteEmployee", ctx, id)}
 }
 
@@ -519,7 +519,7 @@ type MockQuerier_DeleteUser_Call struct {
 // DeleteUser is a helper method to define mock.On call
 //   - ctx context.Context
 //   - id pgtype.UUID
-func (_e *MockQuerier_Expecter) DeleteUser(ctx interface{}, id interface{}) *MockQuerier_DeleteUser_Call {
+func (_e *MockQuerier_Expecter) DeleteUser(ctx any, id any) *MockQuerier_DeleteUser_Call {
 	return &MockQuerier_DeleteUser_Call{Call: _e.mock.On("DeleteUser", ctx, id)}
 }
 
@@ -585,7 +585,7 @@ type MockQuerier_GetEmployee_Call struct {
 // GetEmployee is a helper method to define mock.On call
 //   - ctx context.Context
 //   - id pgtype.UUID
-func (_e *MockQuerier_Expecter) GetEmployee(ctx interface{}, id interface{}) *MockQuerier_GetEmployee_Call {
+func (_e *MockQuerier_Expecter) GetEmployee(ctx any, id any) *MockQuerier_GetEmployee_Call {
 	return &MockQuerier_GetEmployee_Call{Call: _e.mock.On("GetEmployee", ctx, id)}
 }
 
@@ -651,7 +651,7 @@ type MockQuerier_GetUser_Call struct {
 // GetUser is a helper method to define mock.On call
 //   - ctx context.Context
 //   - id pgtype.UUID
-func (_e *MockQuerier_Expecter) GetUser(ctx interface{}, id interface{}) *MockQuerier_GetUser_Call {
+func (_e *MockQuerier_Expecter) GetUser(ctx any, id any) *MockQuerier_GetUser_Call {
 	return &MockQuerier_GetUser_Call{Call: _e.mock.On("GetUser", ctx, id)}
 }
 
@@ -717,7 +717,7 @@ type MockQuerier_GetUserByUsername_Call struct {
 // GetUserByUsername is a helper method to define mock.On call
 //   - ctx context.Context
 //   - username string
-func (_e *MockQuerier_Expecter) GetUserByUsername(ctx interface{}, username interface{}) *MockQuerier_GetUserByUsername_Call {
+func (_e *MockQuerier_Expecter) GetUserByUsername(ctx any, username any) *MockQuerier_GetUserByUsername_Call {
 	return &MockQuerier_GetUserByUsername_Call{Call: _e.mock.On("GetUserByUsername", ctx, username)}
 }
 
@@ -784,7 +784,7 @@ type MockQuerier_ListEmployees_Call struct {
 
 // ListEmployees is a helper method to define mock.On call
 //   - ctx context.Context
-func (_e *MockQuerier_Expecter) ListEmployees(ctx interface{}) *MockQuerier_ListEmployees_Call {
+func (_e *MockQuerier_Expecter) ListEmployees(ctx any) *MockQuerier_ListEmployees_Call {
 	return &MockQuerier_ListEmployees_Call{Call: _e.mock.On("ListEmployees", ctx)}
 }
 
@@ -846,7 +846,7 @@ type MockQuerier_ListUsers_Call struct {
 
 // ListUsers is a helper method to define mock.On call
 //   - ctx context.Context
-func (_e *MockQuerier_Expecter) ListUsers(ctx interface{}) *MockQuerier_ListUsers_Call {
+func (_e *MockQuerier_Expecter) ListUsers(ctx any) *MockQuerier_ListUsers_Call {
 	return &MockQuerier_ListUsers_Call{Call: _e.mock.On("ListUsers", ctx)}
 }
 
@@ -907,7 +907,7 @@ type MockQuerier_UpdateEmployee_Call struct {
 // UpdateEmployee is a helper method to define mock.On call
 //   - ctx context.Context
 //   - arg UpdateEmployeeParams
-func (_e *MockQuerier_Expecter) UpdateEmployee(ctx interface{}, arg interface{}) *MockQuerier_UpdateEmployee_Call {
+func (_e *MockQuerier_Expecter) UpdateEmployee(ctx any, arg any) *MockQuerier_UpdateEmployee_Call {
 	return &MockQuerier_UpdateEmployee_Call{Call: _e.mock.On("UpdateEmployee", ctx, arg)}
 }
 
@@ -973,7 +973,7 @@ type MockQuerier_UpdateUser_Call struct {
 // UpdateUser is a helper method to define mock.On call
 //   - ctx context.Context
 //   - arg UpdateUserParams
-func (_e *MockQuerier_Expecter) UpdateUser(ctx interface{}, arg interface{}) *MockQuerier_UpdateUser_Call {
+func (_e *MockQuerier_Expecter) UpdateUser(ctx any, arg any) *MockQuerier_UpdateUser_Call {
 	return &MockQuerier_UpdateUser_Call{Call: _e.mock.On("UpdateUser", ctx, arg)}
 }
 
